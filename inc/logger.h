@@ -15,7 +15,7 @@
 #include "log4cpp/PatternLayout.hh"
 
 
-#define LOG(__level)  log4cpp::Category::getRoot() << log4cpp::Priority::__level << __FILE__ << ":" << __LINE__ << " " 
+#define LOG(__level)  log4cpp::Category::getRoot() << log4cpp::Priority::__level << __FILE__ << ":" << __LINE__ << "\n\t" 
 
 inline void initLogger(int verbose)
 {
@@ -27,7 +27,7 @@ inline void initLogger(int verbose)
 		log4cpp::PatternLayout *plt = new log4cpp::PatternLayout();
 		if (plt)
 		{
-			plt->setConversionPattern("%d [%p] - %m%n");
+			plt->setConversionPattern("%d [%-6p] - %m%n");
 			app->setLayout(plt);
 		}
 		log.addAppender(app);

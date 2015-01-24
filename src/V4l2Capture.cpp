@@ -21,6 +21,7 @@
 #include <libv4l2.h>
 
 // project
+#include "logger.h"
 #include "V4l2Capture.h"
 
 // Constructor
@@ -39,8 +40,7 @@ bool V4l2Capture::init(unsigned int mandatoryCapabilities)
 {
 	if (initdevice(m_params.m_devName.c_str(), mandatoryCapabilities) == -1)
 	{
-		fprintf(stderr, "[%s] Init device:%s failure\n", __FILE__, m_params.m_devName.c_str());
-
+		LOG(ERROR) << "Cannot init device:" << m_params.m_devName;
 	}
 	return (m_fd!=-1);
 }
@@ -58,7 +58,7 @@ int V4l2Capture::initdevice(const char *dev_name, unsigned int mandatoryCapabili
 	m_fd = v4l2_open(dev_name, O_RDWR | O_NONBLOCK, 0);
 	if (m_fd < 0) 
 	{
-		perror("Cannot open device");
+		LOG(ERROR) << "Cannot open device:" << m_params.m_devName << " " << strerror(errno);
 		this->close();
 		return -1;
 	}
@@ -88,24 +88,24 @@ int V4l2Capture::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 	memset(&(cap), 0, sizeof(cap));
 	if (-1 == xioctl(fd, VIDIOC_QUERYCAP, &cap)) 
 	{
-		fprintf(stderr, "[%s] xioctl cannot get capabilities error %d, %s\n", __FILE__, errno, strerror(errno));
+		LOG(ERROR) << "Cannot get capabilities for device:" << m_params.m_devName << " " << strerror(errno);
 		return -1;
 	}
-	fprintf(stderr, "driver:%s capabilities;%X\n", cap.driver, cap.capabilities);
-
+	LOG(NOTICE) << "driver:" << cap.driver << " " << std::hex << cap.capabilities;
+	
 	if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) 
 	{
-		fprintf(stderr, "[%s] the device '%s' doesnot support capture\n", __FILE__, m_params.m_devName.c_str());
+		LOG(ERROR) << "No capture support for device:" << m_params.m_devName << " " << strerror(errno);
 		return -1;
 	}
 	
-	if ((cap.capabilities & V4L2_CAP_READWRITE)) fprintf(stderr, "%s support read i/o\n", m_params.m_devName.c_str());
-	if ((cap.capabilities & V4L2_CAP_STREAMING))  fprintf(stderr, "%s support streaming i/o\n", m_params.m_devName.c_str());
-	if ((cap.capabilities & V4L2_CAP_TIMEPERFRAME)) fprintf(stderr, "%s support timeperframe\n", m_params.m_devName.c_str());
+	if ((cap.capabilities & V4L2_CAP_READWRITE))    LOG(NOTICE) << m_params.m_devName << " support read/write";
+	if ((cap.capabilities & V4L2_CAP_STREAMING))    LOG(NOTICE) << m_params.m_devName << " support streaming";
+	if ((cap.capabilities & V4L2_CAP_TIMEPERFRAME)) LOG(NOTICE) << m_params.m_devName << " support timeperframe"; 
 	
 	if ( (cap.capabilities & mandatoryCapabilities) != mandatoryCapabilities )
 	{
-		fprintf(stderr, "%s mandatory capabilities not available\n", m_params.m_devName.c_str());
+		LOG(ERROR) << "Mandatory capability not available for device:" << m_params.m_devName;
 		return -1;
 	}
 	
@@ -125,23 +125,23 @@ int V4l2Capture::configureFormat(int fd)
 	
 	if (xioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
 	{
-		fprintf(stderr, "Cannot set format error %d, %s\n", errno, strerror(errno));
+		LOG(ERROR) << "Cannot set format for device:" << m_params.m_devName << " " << strerror(errno);
 		return -1;
 	}			
 	if (fmt.fmt.pix.pixelformat != m_params.m_format) 
 	{
-		printf("Error: format (%d) refused.\n", m_params.m_format);
+		LOG(ERROR) << "Cannot set format format:" << fmt.fmt.pix.pixelformat;
 		return -1;
 	}
 	if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
 	{
-		printf("Warning: driver is sending image at %dx%d\n", fmt.fmt.pix.width, fmt.fmt.pix.width);
+		LOG(WARN) << "Cannot set (width,height) width:" << fmt.fmt.pix.width << "x" << fmt.fmt.pix.width;
 	}
 	
 	m_format     = fmt.fmt.pix.pixelformat;
 	m_bufferSize = fmt.fmt.pix.sizeimage;
 	
-	fprintf(stderr, "[%s] bufferSize:%d\n", __FILE__, m_bufferSize);
+	LOG(NOTICE) << "bufferSize:" << m_bufferSize;
 	
 	return 0;
 }
@@ -157,11 +157,11 @@ int V4l2Capture::configureParam(int fd)
 
 	if (xioctl(fd, VIDIOC_S_PARM, &param) == -1)
 	{
-		fprintf(stderr, "xioctl cannot set param error %d, %s\n", errno, strerror(errno));
-		return -1;
+		LOG(WARN) << "Cannot set param for device:" << m_params.m_devName << " " << strerror(errno);
 	}
 	
-	fprintf(stderr, "fps :%d/%d nbBuffer:%d\n", param.parm.capture.timeperframe.numerator, param.parm.capture.timeperframe.denominator, param.parm.capture.readbuffers);
+	LOG(NOTICE) << "fps:" << param.parm.capture.timeperframe.numerator << "/" << param.parm.capture.timeperframe.denominator;
+	LOG(NOTICE) << "nbBuffer:" << param.parm.capture.readbuffers;
 	
 	return 0;
 }
