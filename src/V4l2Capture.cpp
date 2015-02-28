@@ -67,7 +67,7 @@ int V4l2Capture::initdevice(const char *dev_name, unsigned int mandatoryCapabili
 		this->close();
 		return -1;
 	}	
-	if (configureFormat(m_fd) !=0)
+	if ( (m_params.m_format!=0) && (configureFormat(m_fd) !=0) )
 	{
 		this->close();
 		return -1;
