@@ -10,6 +10,8 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <unistd.h>
+
 #include "log4cpp/Category.hh"
 #include "log4cpp/FileAppender.hh"
 #include "log4cpp/PatternLayout.hh"
