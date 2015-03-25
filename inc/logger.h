@@ -23,7 +23,7 @@ inline void initLogger(int verbose)
 {
 	// initialize log4cpp
 	log4cpp::Category &log = log4cpp::Category::getRoot();
-	log4cpp::Appender *app = new log4cpp::FileAppender("root", ::dup(fileno(stdout)));
+	log4cpp::Appender *app = new log4cpp::FileAppender("root", fileno(stdout));
 	if (app)
 	{
 		log4cpp::PatternLayout *plt = new log4cpp::PatternLayout();
