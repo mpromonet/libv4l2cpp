@@ -19,6 +19,7 @@
 #include <libv4l2.h>
 
 // project
+#include "logger.h"
 #include "V4l2MmapCapture.h"
 
 V4l2MmapCapture* V4l2MmapCapture::createNew(V4L2DeviceParameters params) 
@@ -31,6 +32,12 @@ V4l2MmapCapture* V4l2MmapCapture::createNew(V4L2DeviceParameters params)
 	}
 	return device;
 }
+
+V4l2MmapCapture::V4l2MmapCapture(V4L2DeviceParameters params) : V4l2Capture(params), n_buffers(0) 
+{
+	memset(&m_buffer, 0, sizeof(m_buffer));
+}
+
 
 bool V4l2MmapCapture::captureStart() 
 {
@@ -45,7 +52,7 @@ bool V4l2MmapCapture::captureStart()
 	{
 		if (EINVAL == errno) 
 		{
-			fprintf(stderr, "%s does not support memory mapping\n", m_params.m_devName.c_str());
+			LOG(ERROR) << "Device " << m_params.m_devName << " does not support memory mapping";
 			success = false;
 		} 
 		else 
@@ -56,7 +63,7 @@ bool V4l2MmapCapture::captureStart()
 	}
 	else
 	{
-		fprintf(stderr, "%s memory mapping nb buffer:%d\n", m_params.m_devName.c_str(),  req.count);
+		LOG(NOTICE) << "Device " << m_params.m_devName << " nb buffer:" << req.count;
 		
 		// allocate buffers
 		memset(&m_buffer,0, sizeof(m_buffer));
@@ -75,7 +82,7 @@ bool V4l2MmapCapture::captureStart()
 			}
 			else
 			{
-				fprintf(stderr, "%s memory mapping buffer:%d size:%d\n", m_params.m_devName.c_str(), n_buffers,  buf.length);
+				LOG(INFO) << "Device " << m_params.m_devName << " buffer idx:" << n_buffers << " size:" << buf.length;
 				m_buffer[n_buffers].length = buf.length;
 				m_buffer[n_buffers].start = mmap (   NULL /* start anywhere */, 
 											buf.length, 
@@ -140,7 +147,7 @@ size_t V4l2MmapCapture::read(char* buffer, size_t bufferSize)
 			if (size > bufferSize)
 			{
 				size = bufferSize;
-				fprintf(stderr, "%s buffer truncated:%d size:%d\n", m_params.m_devName.c_str(), m_buffer[buf.index].length,  bufferSize);
+				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << bufferSize << " needed:" << buf.bytesused;
 			}
 			memcpy(buffer, m_buffer[buf.index].start, size);
 

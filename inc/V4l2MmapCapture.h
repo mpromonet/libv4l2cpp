@@ -23,7 +23,7 @@ class V4l2MmapCapture : public V4l2Capture
 		static V4l2MmapCapture* createNew(V4L2DeviceParameters params);
 	
 	protected:
-		V4l2MmapCapture(V4L2DeviceParameters params) : V4l2Capture(params), n_buffers(0) {};
+		V4l2MmapCapture(V4L2DeviceParameters params);
 			
 	public:
 		virtual bool captureStart();
