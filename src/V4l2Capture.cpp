@@ -135,7 +135,7 @@ int V4l2Capture::configureFormat(int fd)
 	}
 	if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
 	{
-		LOG(WARN) << "Cannot set (width,height) width:" << fmt.fmt.pix.width << "x" << fmt.fmt.pix.width;
+		LOG(WARN) << "Cannot set (width,height) width:" << fmt.fmt.pix.width << "x" << fmt.fmt.pix.height;
 	}
 	
 	m_format     = fmt.fmt.pix.pixelformat;
