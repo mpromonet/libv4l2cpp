@@ -1,6 +1,6 @@
 CFLAGS = -W -Wall -pthread -g -pipe $(CFLAGS_EXTRA)
 RM = rm -rf
-ALL_PROGS = v4l2copy v4l2vp8
+ALL_PROGS = v4l2copy v4l2vp8 v4l2x264
 PREFIX=/usr
 
 CC = g++
@@ -22,6 +22,9 @@ libyuv/source/*.cc:
 
 v4l2vp8: src/v4l2vp8.cpp src/V4l2Capture.cpp src/V4l2MmapCapture.cpp src/V4l2ReadCapture.cpp libyuv/source/*.cc 
 	$(CC) -o $@ $(CFLAGS) $^ $(LDFLAGS) -lvpx -I libyuv/include
+
+v4l2x264: src/v4l2x264.cpp src/V4l2Capture.cpp src/V4l2MmapCapture.cpp src/V4l2ReadCapture.cpp 
+	$(CC) -o $@ $(CFLAGS) $^ $(LDFLAGS) -lx264  
 
 clean:
 	-@$(RM) $(ALL_PROGS) .*o 
