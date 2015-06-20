@@ -98,29 +98,20 @@ int main(int argc, char* argv[])
 	int verbose=0;
 	const char *in_devname = "/dev/video0";	
 	const char *out_devname = "/dev/video1";	
-	int width = 320;
-	int height = 240;	
-	int fps = 10;	
 	int c = 0;
 	bool useMmap = false;
 	
-	while ((c = getopt (argc, argv, "hW:H:P:F:v::rM")) != -1)
+	while ((c = getopt (argc, argv, "hP:F:v::rM")) != -1)
 	{
 		switch (c)
 		{
 			case 'v':	verbose = 1; if (optarg && *optarg=='v') verbose++;  break;
-			case 'W':	width = atoi(optarg); break;
-			case 'H':	height = atoi(optarg); break;
-			case 'F':	fps = atoi(optarg); break;
 			case 'M':	useMmap = true; break;			
 			case 'h':
 			{
 				std::cout << argv[0] << " [-v[v]] [-W width] [-H height] source_device dest_device" << std::endl;
 				std::cout << "\t -v            : verbose " << std::endl;
 				std::cout << "\t -vv           : very verbose " << std::endl;
-				std::cout << "\t -W width      : V4L2 capture width (default "<< width << ")" << std::endl;
-				std::cout << "\t -H height     : V4L2 capture height (default "<< height << ")" << std::endl;
-				std::cout << "\t -F fps        : V4L2 capture framerate (default "<< fps << ")" << std::endl;
 				std::cout << "\t -M            : V4L2 capture using memory mapped buffers (default use read interface)" << std::endl;				
 				std::cout << "\t source_device : V4L2 capture device (default "<< in_devname << ")" << std::endl;
 				std::cout << "\t dest_device   : V4L2 capture device (default "<< out_devname << ")" << std::endl;
@@ -143,8 +134,7 @@ int main(int argc, char* argv[])
 	initLogger(verbose);
 
 	// init V4L2 capture interface
-	int format = V4L2_PIX_FMT_YUYV;
-	V4L2DeviceParameters param(in_devname,format,width,height,fps,verbose);
+	V4L2DeviceParameters param(in_devname, 0, 0, 0, 0,verbose);
 	V4l2Capture* videoCapture = createVideoCapure(param, useMmap);
 	
 	if (videoCapture == NULL)
