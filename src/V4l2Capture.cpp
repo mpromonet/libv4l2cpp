@@ -67,7 +67,7 @@ int V4l2Capture::initdevice(const char *dev_name, unsigned int mandatoryCapabili
 		this->close();
 		return -1;
 	}	
-	if ( (m_params.m_format!=0) && (configureFormat(m_fd) !=0) )
+	if (configureFormat(m_fd) !=0) 
 	{
 		this->close();
 		return -1;
@@ -115,31 +115,39 @@ int V4l2Capture::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 // configure capture format 
 int V4l2Capture::configureFormat(int fd)
 {
-	struct v4l2_format   fmt;			
-	memset(&(fmt), 0, sizeof(fmt));
-	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	fmt.fmt.pix.width       = m_params.m_width;
-	fmt.fmt.pix.height      = m_params.m_height;
-	fmt.fmt.pix.pixelformat = m_params.m_format;
-	fmt.fmt.pix.field       = V4L2_FIELD_ANY;
-	
-	if (xioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
+	if (m_params.m_format!=0) 
 	{
-		LOG(ERROR) << "Cannot set format for device:" << m_params.m_devName << " " << strerror(errno);
-		return -1;
-	}			
-	if (fmt.fmt.pix.pixelformat != m_params.m_format) 
-	{
-		LOG(ERROR) << "Cannot set format format:" << fmt.fmt.pix.pixelformat;
-		return -1;
+		struct v4l2_format   fmt;			
+		memset(&(fmt), 0, sizeof(fmt));
+		fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		fmt.fmt.pix.width       = m_params.m_width;
+		fmt.fmt.pix.height      = m_params.m_height;
+		fmt.fmt.pix.pixelformat = m_params.m_format;
+		fmt.fmt.pix.field       = V4L2_FIELD_ANY;
+		
+		if (xioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
+		{
+			LOG(ERROR) << "Cannot set format for device:" << m_params.m_devName << " " << strerror(errno);
+			return -1;
+		}			
+		if (fmt.fmt.pix.pixelformat != m_params.m_format) 
+		{
+			char formatArray[] = { (fmt.fmt.pix.pixelformat&0xff), ((fmt.fmt.pix.pixelformat>>8)&0xff), ((fmt.fmt.pix.pixelformat>>16)&0xff), ((fmt.fmt.pix.pixelformat>>24)&0xff), 0 };
+			LOG(ERROR) << "Cannot set pixelformat to:" << formatArray;
+			return -1;
+		}
+		if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
+		{
+			LOG(WARN) << "Cannot set size width:" << fmt.fmt.pix.width << " height:" << fmt.fmt.pix.height;
+		}
+		
+		m_format     = fmt.fmt.pix.pixelformat;
+		m_bufferSize = fmt.fmt.pix.sizeimage;
 	}
-	if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
+	else
 	{
-		LOG(WARN) << "Cannot set (width,height) width:" << fmt.fmt.pix.width << "x" << fmt.fmt.pix.height;
+		this->queryFormat();
 	}
-	
-	m_format     = fmt.fmt.pix.pixelformat;
-	m_bufferSize = fmt.fmt.pix.sizeimage;
 	
 	LOG(NOTICE) << "bufferSize:" << m_bufferSize;
 	
