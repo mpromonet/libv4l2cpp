@@ -111,9 +111,9 @@ int main(int argc, char* argv[])
 	int verbose=0;
 	const char *in_devname = "/dev/video0";	
 	const char *out_devname = "/dev/video1";	
-	int width = 320;
-	int height = 240;	
-	int fps = 10;	
+	int width = 640;
+	int height = 480;	
+	int fps = 25;	
 	int c = 0;
 	bool useMmap = false;
 	
@@ -168,75 +168,80 @@ int main(int argc, char* argv[])
 	{
 		x264_param_t param;
 		x264_param_default_preset(&param, "veryfast", "zerolatency");
+		if (verbose>2)
+		{
+			param.i_log_level = X264_LOG_DEBUG;
+		}
 		param.i_threads = 1;
 		param.i_width = width;
 		param.i_height = height;
 		param.i_fps_num = fps;
 		param.i_fps_den = 1;
-		// Intra refres:
-		param.i_keyint_max = fps;
-		param.b_intra_refresh = 1;
-		//For streaming:
-		param.b_repeat_headers = 1;
-		param.b_annexb = 1;
+		param.i_keyint_max = fps;		
 		
 		x264_t* encoder = x264_encoder_open(&param);
-		
-		x264_picture_t pic_in;
-		x264_picture_init( &pic_in );
-		x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
-		
-		x264_picture_t pic_out;
-		
-		int outputFd = createOutput(out_devname, videoCapture->getFd());		
-		fd_set fdset;
-		FD_ZERO(&fdset);
-		timeval tv;
-		tv.tv_sec=1;
-		tv.tv_usec=0;
-		LOG(NOTICE) << "Start Compressing " << in_devname << " to " << out_devname; 
-		videoCapture->captureStart();
-		int stop=0;
-		while (!stop) 
+		if (!encoder)
 		{
-			FD_SET(videoCapture->getFd(), &fdset);
-			int ret = select(videoCapture->getFd()+1, &fdset, NULL, NULL, &tv);
-			if (ret == 1)
+			LOG(WARN) << "Cannot create X264 encoder for device:" << in_devname; 
+		}
+		else
+		{		
+			x264_picture_t pic_in;
+			x264_picture_init( &pic_in );
+			x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
+			
+			x264_picture_t pic_out;
+			
+			int outputFd = createOutput(out_devname, videoCapture->getFd());		
+			fd_set fdset;
+			FD_ZERO(&fdset);
+			timeval tv;
+			tv.tv_sec=1;
+			tv.tv_usec=0;
+			LOG(NOTICE) << "Start Compressing " << in_devname << " to " << out_devname; 
+			videoCapture->captureStart();
+			int stop=0;
+			while (!stop) 
 			{
-				char buffer[videoCapture->getBufferSize()];
-				int rsize = videoCapture->read(buffer, sizeof(buffer));
-
-				ConvertToI420(buffer, rsize,
-					pic_in.img.plane[0], width,
-					pic_in.img.plane[1], width/2,
-					pic_in.img.plane[2], width/2,
-					0, 0,
-					width, height,
-					width, height,
-					libyuv::kRotate0, libyuv::FOURCC_YUY2);
-				
-				x264_nal_t* nals = NULL;
-				int i_nals = 0;
-				int frame_size = x264_encoder_encode(encoder, &nals, &i_nals, &pic_in, &pic_out);
-				if (frame_size >= 0)
+				FD_SET(videoCapture->getFd(), &fdset);
+				int ret = select(videoCapture->getFd()+1, &fdset, NULL, NULL, &tv);
+				if (ret == 1)
 				{
-					for (int i=0; i < i_nals; ++i)
+					char buffer[videoCapture->getBufferSize()];
+					int rsize = videoCapture->read(buffer, sizeof(buffer));
+
+					ConvertToI420(buffer, rsize,
+						pic_in.img.plane[0], width,
+						pic_in.img.plane[1], width/2,
+						pic_in.img.plane[2], width/2,
+						0, 0,
+						width, height,
+						width, height,
+						libyuv::kRotate0, libyuv::FOURCC_YUY2);
+					
+					x264_nal_t* nals = NULL;
+					int i_nals = 0;
+					int frame_size = x264_encoder_encode(encoder, &nals, &i_nals, &pic_in, &pic_out);
+					if (frame_size >= 0)
 					{
-						int wsize = write(outputFd, nals[i].p_payload, nals[i].i_payload);
-						LOG(DEBUG) << "Copied " << i << "/" << i_nals << " size:" << wsize; 					
+						for (int i=0; i < i_nals; ++i)
+						{
+							int wsize = write(outputFd, nals[i].p_payload, nals[i].i_payload);
+							LOG(DEBUG) << "Copied " << i << "/" << i_nals << " size:" << wsize; 					
+						}
 					}
 				}
+				else if (ret == -1)
+				{
+					LOG(NOTICE) << "stop " << strerror(errno); 
+					stop=1;
+				}
 			}
-			else if (ret == -1)
-			{
-				LOG(NOTICE) << "stop " << strerror(errno); 
-				stop=1;
-			}
+			
+			x264_picture_clean(&pic_in);
+			x264_picture_clean(&pic_out);
+			x264_encoder_close(encoder);
 		}
-		
-		x264_picture_clean(&pic_in);
-		x264_picture_clean(&pic_out);
-		x264_encoder_close(encoder);
 		
 		videoCapture->captureStop();
 		delete videoCapture;
