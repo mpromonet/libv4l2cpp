@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
 					0, 0,
 					width, height,
 					width, height,
-					libyuv::kRotate0, libyuv::FOURCC_YUV2);
+					libyuv::kRotate0, libyuv::FOURCC_YUY2);
 												
 				if(vpx_codec_encode(&codec, &raw, frame_cnt++, 1, flags, VPX_DL_REALTIME))    
 				{					
