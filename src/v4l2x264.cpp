@@ -22,6 +22,7 @@ extern "C"
 	#include "x264.h"
 }
 
+#include "libyuv.h"
 
 #include "logger.h"
 
@@ -175,10 +176,6 @@ int main(int argc, char* argv[])
 		// Intra refres:
 		param.i_keyint_max = fps;
 		param.b_intra_refresh = 1;
-		//Rate control:
-		param.rc.i_rc_method = X264_RC_CRF;
-		param.rc.f_rf_constant = 25;
-		param.rc.f_rf_constant_max = 35;
 		//For streaming:
 		param.b_repeat_headers = 1;
 		param.b_annexb = 1;
@@ -186,7 +183,9 @@ int main(int argc, char* argv[])
 		x264_t* encoder = x264_encoder_open(&param);
 		
 		x264_picture_t pic_in;
-		x264_picture_alloc(&pic_in, X264_CSP_YV12, width, height);
+		x264_picture_init( &pic_in );
+		x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
+		
 		x264_picture_t pic_out;
 		
 		int outputFd = createOutput(out_devname, videoCapture->getFd());		
@@ -195,7 +194,7 @@ int main(int argc, char* argv[])
 		timeval tv;
 		tv.tv_sec=1;
 		tv.tv_usec=0;
-		LOG(NOTICE) << "Start Copying " << in_devname << " to " << out_devname; 
+		LOG(NOTICE) << "Start Compressing " << in_devname << " to " << out_devname; 
 		videoCapture->captureStart();
 		int stop=0;
 		while (!stop) 
@@ -206,20 +205,26 @@ int main(int argc, char* argv[])
 			{
 				char buffer[videoCapture->getBufferSize()];
 				int rsize = videoCapture->read(buffer, sizeof(buffer));
-				
-				int widthXheight = width * height;
-				memcpy(pic_in.img.plane[0], buffer, widthXheight);
-				memcpy(pic_in.img.plane[1], buffer + widthXheight, widthXheight >> 2);
-				memcpy(pic_in.img.plane[2], buffer + widthXheight + (widthXheight >> 2), widthXheight >> 2);
-				
+
+				ConvertToI420(buffer, rsize,
+					pic_in.img.plane[0], width,
+					pic_in.img.plane[1], width/2,
+					pic_in.img.plane[2], width/2,
+					0, 0,
+					width, height,
+					width, height,
+					libyuv::kRotate0, libyuv::FOURCC_YUY2);
 				
 				x264_nal_t* nals = NULL;
 				int i_nals = 0;
 				int frame_size = x264_encoder_encode(encoder, &nals, &i_nals, &pic_in, &pic_out);
 				if (frame_size >= 0)
 				{
-					int wsize = write(outputFd, nals[0].p_payload, frame_size);
-					LOG(DEBUG) << "Copied " << rsize << " " << wsize; 					
+					for (int i=0; i < i_nals; ++i)
+					{
+						int wsize = write(outputFd, nals[i].p_payload, nals[i].i_payload);
+						LOG(DEBUG) << "Copied " << i << "/" << i_nals << " size:" << wsize; 					
+					}
 				}
 			}
 			else if (ret == -1)
@@ -228,6 +233,11 @@ int main(int argc, char* argv[])
 				stop=1;
 			}
 		}
+		
+		x264_picture_clean(&pic_in);
+		x264_picture_clean(&pic_out);
+		x264_encoder_close(encoder);
+		
 		videoCapture->captureStop();
 		delete videoCapture;
 	}

@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
 		timeval tv;
 		tv.tv_sec=1;
 		tv.tv_usec=0;
-		LOG(NOTICE) << "Start Copying " << in_devname << " to " << out_devname; 
+		LOG(NOTICE) << "Start Compressing " << in_devname << " to " << out_devname; 
 		videoCapture->captureStart();
 		int stop=0;
 		while (!stop) 
@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
 					0, 0,
 					width, height,
 					width, height,
-					libyuv::kRotate0, libyuv::FOURCC_I420);
+					libyuv::kRotate0, libyuv::FOURCC_YUV2);
 												
 				if(vpx_codec_encode(&codec, &raw, frame_cnt++, 1, flags, VPX_DL_REALTIME))    
 				{					

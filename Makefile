@@ -23,8 +23,8 @@ libyuv/source/*.cc:
 v4l2vp8: src/v4l2vp8.cpp src/V4l2Capture.cpp src/V4l2MmapCapture.cpp src/V4l2ReadCapture.cpp libyuv/source/*.cc 
 	$(CC) -o $@ $(CFLAGS) $^ $(LDFLAGS) -lvpx -I libyuv/include
 
-v4l2x264: src/v4l2x264.cpp src/V4l2Capture.cpp src/V4l2MmapCapture.cpp src/V4l2ReadCapture.cpp 
-	$(CC) -o $@ $(CFLAGS) $^ $(LDFLAGS) -lx264  
+v4l2x264: src/v4l2x264.cpp src/V4l2Capture.cpp src/V4l2MmapCapture.cpp src/V4l2ReadCapture.cpp libyuv/source/*.cc 
+	$(CC) -o $@ $(CFLAGS) $^ $(LDFLAGS) -lx264 -I libyuv/include
 
 clean:
 	-@$(RM) $(ALL_PROGS) .*o 
