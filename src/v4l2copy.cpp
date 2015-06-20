@@ -99,20 +99,20 @@ int main(int argc, char* argv[])
 	const char *in_devname = "/dev/video0";	
 	const char *out_devname = "/dev/video1";	
 	int c = 0;
-	bool useMmap = false;
+	bool useMmap = true;
 	
-	while ((c = getopt (argc, argv, "hP:F:v::rM")) != -1)
+	while ((c = getopt (argc, argv, "hP:F:v::r")) != -1)
 	{
 		switch (c)
 		{
 			case 'v':	verbose = 1; if (optarg && *optarg=='v') verbose++;  break;
-			case 'M':	useMmap = true; break;			
+			case 'r':	useMmap = false; break;			
 			case 'h':
 			{
 				std::cout << argv[0] << " [-v[v]] [-W width] [-H height] source_device dest_device" << std::endl;
 				std::cout << "\t -v            : verbose " << std::endl;
 				std::cout << "\t -vv           : very verbose " << std::endl;
-				std::cout << "\t -M            : V4L2 capture using memory mapped buffers (default use read interface)" << std::endl;				
+				std::cout << "\t -r            : V4L2 capture using read interface (default use memory mapped buffers)" << std::endl;
 				std::cout << "\t source_device : V4L2 capture device (default "<< in_devname << ")" << std::endl;
 				std::cout << "\t dest_device   : V4L2 capture device (default "<< out_devname << ")" << std::endl;
 				exit(0);
@@ -151,6 +151,7 @@ int main(int argc, char* argv[])
 		tv.tv_usec=0;
 		LOG(NOTICE) << "Start Copying " << in_devname << " to " << out_devname; 
 		videoCapture->captureStart();
+		
 		int stop=0;
 		while (!stop) 
 		{
@@ -160,8 +161,16 @@ int main(int argc, char* argv[])
 			{
 				char buffer[videoCapture->getBufferSize()];
 				int rsize = videoCapture->read(buffer, sizeof(buffer));
-				int wsize = write(outputFd, buffer, rsize);
-				LOG(DEBUG) << "Copied " << rsize << " " << wsize; 
+				if (rsize == -1)
+				{
+					LOG(NOTICE) << "stop " << strerror(errno); 
+					stop=1;					
+				}
+				else
+				{
+					int wsize = write(outputFd, buffer, rsize);
+					LOG(DEBUG) << "Copied " << rsize << " " << wsize; 
+				}
 			}
 			else if (ret == -1)
 			{
