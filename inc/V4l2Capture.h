@@ -39,7 +39,7 @@ struct V4L2DeviceParameters
 class V4l2Capture
 {		
 	protected:
-		V4l2Capture(V4L2DeviceParameters params);
+		V4l2Capture(const V4L2DeviceParameters&  params);
 	
 	public:
 		virtual ~V4l2Capture();
@@ -48,6 +48,8 @@ class V4l2Capture
 		int getFd() { return m_fd; };		
 		int getBufferSize() { return m_bufferSize; };
 		int getFormat() { return m_format; } ;
+		int getWidth() { return m_width; };
+		int getHeight() { return m_height; };
 		void queryFormat();
 
 	protected:
@@ -71,6 +73,24 @@ class V4l2Capture
 		int m_fd;
 		int m_bufferSize;
 		int m_format;
+		int m_width;
+		int m_height;
+};
+
+// ---------------------------------
+// V4L2 Output
+// ---------------------------------
+class V4l2Output
+{		
+	public:
+		V4l2Output(const V4L2DeviceParameters&  params);
+		virtual ~V4l2Output();
+	
+	public:
+		int getFd() { return m_fd; };		
+		
+	protected:
+		int m_fd;
 };
 
 #endif

@@ -14,6 +14,7 @@
 #include <linux/videodev2.h>
 #include <sys/ioctl.h>
 #include <stdint.h>
+#include <signal.h>
 
 #include <fstream>
 
@@ -28,6 +29,14 @@ extern "C"
 
 #include "V4l2MmapCapture.h"
 #include "V4l2ReadCapture.h"
+
+int stop=0;
+void sighandler(int)
+{ 
+	printf("SIGINT\n");
+	stop =1;
+}
+
 
 // -----------------------------------------
 //    create video capture interface
@@ -46,62 +55,6 @@ V4l2Capture* createVideoCapure(const V4L2DeviceParameters & param, bool useMmap)
 	return videoCapture;
 }
 
-// -----------------------------------------
-//    create output
-// -----------------------------------------
-int createOutput(const std::string & outputFile, int inputFd)
-{
-	int outputFd = -1;
-	struct stat sb;		
-	if ( (stat(outputFile.c_str(), &sb)==0) && ((sb.st_mode & S_IFMT) == S_IFCHR) ) 
-	{
-		// open & initialize a V4L2 output
-		outputFd = open(outputFile.c_str(), O_WRONLY);
-		if (outputFd != -1)
-		{
-			struct v4l2_capability cap;
-			memset(&(cap), 0, sizeof(cap));
-			if (0 == ioctl(outputFd, VIDIOC_QUERYCAP, &cap)) 
-			{			
-				LOG(NOTICE) << "Output device name:" << cap.driver << " cap:" <<  std::hex << cap.capabilities;
-				if (cap.capabilities & V4L2_CAP_VIDEO_OUTPUT) 
-				{				
-					struct v4l2_format   fmt;			
-					memset(&(fmt), 0, sizeof(fmt));
-					fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-					if (ioctl(inputFd, VIDIOC_G_FMT, &fmt) == -1)
-					{
-						LOG(ERROR) << "Cannot get input format "<< strerror(errno);
-					}		
-					else 
-					{
-						fmt.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
-						fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_H264;
-						if (ioctl(outputFd, VIDIOC_S_FMT, &fmt) == -1)
-						{
-							LOG(ERROR) << "Cannot set output format "<< strerror(errno);
-						}		
-					}
-				}			
-			}
-		}
-		else
-		{
-			LOG(ERROR) << "Cannot open " << outputFile << " " << strerror(errno);
-		}
-	}
-	else
-	{
-		outputFd = open(outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
-	}
-	
-	if (outputFd == -1)		
-	{
-		LOG(NOTICE) << "Error openning " << outputFile << " " << strerror(errno);
-	}
-	
-	return outputFd;
-}	
 
 /* ---------------------------------------------------------------------------
 **  main
@@ -113,7 +66,7 @@ int main(int argc, char* argv[])
 	const char *out_devname = "/dev/video1";	
 	int width = 640;
 	int height = 480;	
-	int fps = 25;	
+	int fps = 10;	
 	int c = 0;
 	bool useMmap = true;
 	
@@ -167,8 +120,8 @@ int main(int argc, char* argv[])
 	else
 	{
 		x264_param_t param;
-		x264_param_default_preset(&param, "veryfast", "zerolatency");
-		if (verbose>2)
+		x264_param_default_preset(&param, "ultrafast", "zerolatency");
+		if (verbose>1)
 		{
 			param.i_log_level = X264_LOG_DEBUG;
 		}
@@ -177,7 +130,23 @@ int main(int argc, char* argv[])
 		param.i_height = height;
 		param.i_fps_num = fps;
 		param.i_fps_den = 1;
-		param.i_keyint_max = fps;		
+		param.i_keyint_min = fps;
+		param.i_keyint_max = fps;
+#if CQP
+		param.rc.i_rc_method = X264_RC_CQP;
+		param.rc.i_qp_constant = 20;
+#endif		
+#ifdef CRF
+		param.rc.i_rc_method = X264_RC_CRF;
+		param.rc.f_rf_constant = 10;
+		param.rc.f_rf_constant_max = 10;
+#endif		
+#ifdef CBR
+		param.rc.i_rc_method = X264_RC_ABR;
+		param.rc.i_vbv_buffer_size = 100;
+		param.rc.i_bitrate = param.rc.i_vbv_buffer_size * param.i_fps_num / param.i_fps_den;
+		param.rc.i_vbv_max_bitrate = param.rc.i_bitrate;
+#endif		
 		
 		x264_t* encoder = x264_encoder_open(&param);
 		if (!encoder)
@@ -192,25 +161,35 @@ int main(int argc, char* argv[])
 			
 			x264_picture_t pic_out;
 			
-			int outputFd = createOutput(out_devname, videoCapture->getFd());		
+			V4L2DeviceParameters outparam(out_devname, V4L2_PIX_FMT_H264, videoCapture->getWidth(), videoCapture->getHeight(), 0,verbose);
+			V4l2Output out(outparam);
 			fd_set fdset;
 			FD_ZERO(&fdset);
 			timeval tv;
-			tv.tv_sec=1;
-			tv.tv_usec=0;
+			timeval refTime;
+			timeval curTime;
 			LOG(NOTICE) << "Start Compressing " << in_devname << " to " << out_devname; 
 			videoCapture->captureStart();
-			int stop=0;
+			
+			signal(SIGINT,sighandler);
 			while (!stop) 
 			{
 				FD_SET(videoCapture->getFd(), &fdset);
+				tv.tv_sec=1;
+				tv.tv_usec=0;
 				int ret = select(videoCapture->getFd()+1, &fdset, NULL, NULL, &tv);
 				if (ret == 1)
 				{
+					gettimeofday(&refTime, NULL);	
 					char buffer[videoCapture->getBufferSize()];
 					int rsize = videoCapture->read(buffer, sizeof(buffer));
-
-					ConvertToI420(buffer, rsize,
+					
+					gettimeofday(&curTime, NULL);												
+					timeval captureTime;
+					timersub(&curTime,&refTime,&captureTime);
+					refTime = curTime;
+					
+					ConvertToI420((const uint8*)buffer, rsize,
 						pic_in.img.plane[0], width,
 						pic_in.img.plane[1], width/2,
 						pic_in.img.plane[2], width/2,
@@ -218,28 +197,49 @@ int main(int argc, char* argv[])
 						width, height,
 						width, height,
 						libyuv::kRotate0, libyuv::FOURCC_YUY2);
+
+					gettimeofday(&curTime, NULL);												
+					timeval convertTime;
+					timersub(&curTime,&refTime,&convertTime);
+					refTime = curTime;
 					
 					x264_nal_t* nals = NULL;
 					int i_nals = 0;
 					int frame_size = x264_encoder_encode(encoder, &nals, &i_nals, &pic_in, &pic_out);
+					
+					gettimeofday(&curTime, NULL);												
+					timeval endodeTime;
+					timersub(&curTime,&refTime,&endodeTime);
+					refTime = curTime;
+					
 					if (frame_size >= 0)
 					{
 						for (int i=0; i < i_nals; ++i)
 						{
-							int wsize = write(outputFd, nals[i].p_payload, nals[i].i_payload);
+							int wsize = write(out.getFd(), nals[i].p_payload, nals[i].i_payload);
 							LOG(DEBUG) << "Copied " << i << "/" << i_nals << " size:" << wsize; 					
 						}
 					}
+					
+					gettimeofday(&curTime, NULL);												
+					timeval writeTime;
+					timersub(&curTime,&refTime,&writeTime);
+					refTime = curTime;
+
+					LOG(DEBUG) << "dts:" << pic_out.i_dts << " captureTime:" << (captureTime.tv_sec*1000+captureTime.tv_usec/1000) 
+							<< " convertTime:" << (convertTime.tv_sec*1000+convertTime.tv_usec/1000)					
+							<< " endodeTime:" << (endodeTime.tv_sec*1000+endodeTime.tv_usec/1000)
+							<< " writeTime:" << (writeTime.tv_sec*1000+writeTime.tv_usec/1000); 					
+					
 				}
 				else if (ret == -1)
 				{
-					LOG(NOTICE) << "stop " << strerror(errno); 
+					LOG(NOTICE) << "stop error:" << strerror(errno); 
 					stop=1;
 				}
 			}
 			
 			x264_picture_clean(&pic_in);
-			x264_picture_clean(&pic_out);
 			x264_encoder_close(encoder);
 		}
 		

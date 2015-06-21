@@ -143,18 +143,20 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		int outputFd = createOutput(out_devname, videoCapture->getFd());		
+		V4L2DeviceParameters outparam(out_devname, videoCapture->getFormat(), videoCapture->getWidth(), videoCapture->getHeight(), 0,verbose);
+		V4l2Output out(outparam);
+		
 		fd_set fdset;
 		FD_ZERO(&fdset);
 		timeval tv;
-		tv.tv_sec=1;
-		tv.tv_usec=0;
 		LOG(NOTICE) << "Start Copying " << in_devname << " to " << out_devname; 
 		videoCapture->captureStart();
 		
 		int stop=0;
 		while (!stop) 
 		{
+			tv.tv_sec=1;
+			tv.tv_usec=0;
 			FD_SET(videoCapture->getFd(), &fdset);
 			int ret = select(videoCapture->getFd()+1, &fdset, NULL, NULL, &tv);
 			if (ret == 1)
@@ -168,7 +170,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					int wsize = write(outputFd, buffer, rsize);
+					int wsize = write(out.getFd(), buffer, rsize);
 					LOG(DEBUG) << "Copied " << rsize << " " << wsize; 
 				}
 			}

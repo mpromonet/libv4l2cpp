@@ -25,7 +25,7 @@
 #include "V4l2Capture.h"
 
 // Constructor
-V4l2Capture::V4l2Capture(V4L2DeviceParameters params) : m_params(params), m_fd(-1), m_bufferSize(0), m_format(0)
+V4l2Capture::V4l2Capture(const V4L2DeviceParameters& params) : m_params(params), m_fd(-1), m_bufferSize(0), m_format(0)
 {
 }
 
@@ -142,6 +142,8 @@ int V4l2Capture::configureFormat(int fd)
 		}
 		
 		m_format     = fmt.fmt.pix.pixelformat;
+		m_width      = fmt.fmt.pix.width;
+		m_height     = fmt.fmt.pix.height;		
 		m_bufferSize = fmt.fmt.pix.sizeimage;
 	}
 	else
@@ -149,7 +151,8 @@ int V4l2Capture::configureFormat(int fd)
 		this->queryFormat();
 	}
 	
-	LOG(NOTICE) << "bufferSize:" << m_bufferSize;
+	char formatArray[] = { (m_format&0xff), ((m_format>>8)&0xff), ((m_format>>16)&0xff), ((m_format>>24)&0xff), 0 };
+	LOG(NOTICE) << m_params.m_devName << ":" << formatArray << " size:" << m_params.m_width << "x" << m_params.m_height << " bufferSize:" << m_bufferSize;
 	
 	return 0;
 }
@@ -184,6 +187,8 @@ void V4l2Capture::queryFormat()
 	if (0 == ioctl(m_fd,VIDIOC_G_FMT,&fmt)) // don't understand why xioctl give a different result
 	{
 		m_format     = fmt.fmt.pix.pixelformat;
+		m_width      = fmt.fmt.pix.width;
+		m_height     = fmt.fmt.pix.height;
 		m_bufferSize = fmt.fmt.pix.sizeimage;
 	}
 }
@@ -201,4 +206,55 @@ int V4l2Capture::xioctl(int fd, int request, void *arg)
 	return ret;
 }
 				
+
+V4l2Output::V4l2Output(const V4L2DeviceParameters& params) : m_fd(-1)
+{
+	struct stat sb;		
+	if ( (stat(params.m_devName.c_str(), &sb)==0) && ((sb.st_mode & S_IFMT) == S_IFCHR) ) 
+	{
+		// open & initialize a V4L2 output
+		m_fd = open(params.m_devName.c_str(), O_WRONLY);
+		if (m_fd != -1)
+		{
+			struct v4l2_capability cap;
+			memset(&(cap), 0, sizeof(cap));
+			if (0 == ioctl(m_fd, VIDIOC_QUERYCAP, &cap)) 
+			{			
+				LOG(NOTICE) << "Output device name:" << cap.driver << " cap:" <<  std::hex << cap.capabilities;
+				if (cap.capabilities & V4L2_CAP_VIDEO_OUTPUT) 
+				{				
+					struct v4l2_format   fmt;			
+					memset(&(fmt), 0, sizeof(fmt));
+					fmt.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
+					fmt.fmt.pix.width  = params.m_width;
+					fmt.fmt.pix.height = params.m_height;
+					fmt.fmt.pix.pixelformat = params.m_format;
+					if (ioctl(m_fd, VIDIOC_S_FMT, &fmt) == -1)
+					{
+						LOG(ERROR) << "Cannot set output format "<< strerror(errno);
+					}		
+				}			
+			}
+		}
+		else
+		{
+			LOG(ERROR) << "Cannot open " << params.m_devName << " " << strerror(errno);
+		}
+	}
+	else
+	{
+		// open a normal file
+		m_fd = open(params.m_devName.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+	}
+	
+	if (m_fd == -1)		
+	{
+		LOG(NOTICE) << "Error openning " << params.m_devName << " " << strerror(errno);
+	}
+}	
+
+V4l2Output::~V4l2Output()
+{
+	if (m_fd !=-1) v4l2_close(m_fd);
+}
 

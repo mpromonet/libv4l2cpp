@@ -43,62 +43,6 @@ V4l2Capture* createVideoCapure(const V4L2DeviceParameters & param, bool useMmap)
 	return videoCapture;
 }
 
-// -----------------------------------------
-//    create output
-// -----------------------------------------
-int createOutput(const std::string & outputFile, int inputFd)
-{
-	int outputFd = -1;
-	struct stat sb;		
-	if ( (stat(outputFile.c_str(), &sb)==0) && ((sb.st_mode & S_IFMT) == S_IFCHR) ) 
-	{
-		// open & initialize a V4L2 output
-		outputFd = open(outputFile.c_str(), O_WRONLY);
-		if (outputFd != -1)
-		{
-			struct v4l2_capability cap;
-			memset(&(cap), 0, sizeof(cap));
-			if (0 == ioctl(outputFd, VIDIOC_QUERYCAP, &cap)) 
-			{			
-				LOG(NOTICE) << "Output device name:" << cap.driver << " cap:" <<  std::hex << cap.capabilities;
-				if (cap.capabilities & V4L2_CAP_VIDEO_OUTPUT) 
-				{				
-					struct v4l2_format   fmt;			
-					memset(&(fmt), 0, sizeof(fmt));
-					fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-					if (ioctl(inputFd, VIDIOC_G_FMT, &fmt) == -1)
-					{
-						LOG(ERROR) << "Cannot get input format "<< strerror(errno);
-					}		
-					else 
-					{
-						fmt.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
-						fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_VP8;
-						if (ioctl(outputFd, VIDIOC_S_FMT, &fmt) == -1)
-						{
-							LOG(ERROR) << "Cannot set output format "<< strerror(errno);
-						}		
-					}
-				}			
-			}
-		}
-		else
-		{
-			LOG(ERROR) << "Cannot open " << outputFile << " " << strerror(errno);
-		}
-	}
-	else
-	{
-		outputFd = open(outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
-	}
-	
-	if (outputFd == -1)		
-	{
-		LOG(NOTICE) << "Error openning " << outputFile << " " << strerror(errno);
-	}
-	
-	return outputFd;
-}	
 
 /* ---------------------------------------------------------------------------
 **  main
@@ -180,17 +124,19 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		int outputFd = createOutput(out_devname, videoCapture->getFd());		
+		V4L2DeviceParameters outparam(out_devname, V4L2_PIX_FMT_VP8, videoCapture->getWidth(), videoCapture->getHeight(), 0,verbose);
+		V4l2Output out(outparam);
+		
 		fd_set fdset;
 		FD_ZERO(&fdset);
 		timeval tv;
-		tv.tv_sec=1;
-		tv.tv_usec=0;
 		LOG(NOTICE) << "Start Compressing " << in_devname << " to " << out_devname; 
 		videoCapture->captureStart();
 		int stop=0;
 		while (!stop) 
 		{
+			tv.tv_sec=1;
+			tv.tv_usec=0;
 			FD_SET(videoCapture->getFd(), &fdset);
 			int ret = select(videoCapture->getFd()+1, &fdset, NULL, NULL, &tv);
 			if (ret == 1)
@@ -218,7 +164,7 @@ int main(int argc, char* argv[])
 				{
 					if (pkt->kind==VPX_CODEC_CX_FRAME_PKT)
 					{
-						int wsize = write(outputFd, pkt->data.frame.buf, pkt->data.frame.sz);
+						int wsize = write(out.getFd(), pkt->data.frame.buf, pkt->data.frame.sz);
 						LOG(DEBUG) << "Copied " << rsize << " " << wsize; 
 					}
 					else
