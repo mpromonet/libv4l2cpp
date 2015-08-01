@@ -5,6 +5,8 @@
 **
 ** v4l2copy.cpp
 ** 
+** Copy from a V4L2 capture device to an other V4L2 output device
+** 
 ** -------------------------------------------------------------------------*/
 
 #include <unistd.h>
@@ -18,25 +20,9 @@
 
 #include "logger.h"
 
-#include "V4l2MmapCapture.h"
-#include "V4l2ReadCapture.h"
-
-// -----------------------------------------
-//    create video capture interface
-// -----------------------------------------
-V4l2Capture* createVideoCapure(const V4L2DeviceParameters & param, bool useMmap)
-{
-	V4l2Capture* videoCapture = NULL;
-	if (useMmap)
-	{
-		videoCapture = V4l2MmapCapture::createNew(param);
-	}
-	else
-	{
-		videoCapture = V4l2ReadCapture::createNew(param);
-	}
-	return videoCapture;
-}
+#include "V4l2Device.h"
+#include "V4l2Capture.h"
+#include "V4l2Output.h"
 
 /* ---------------------------------------------------------------------------
 **  main
@@ -83,7 +69,7 @@ int main(int argc, char* argv[])
 
 	// init V4L2 capture interface
 	V4L2DeviceParameters param(in_devname, 0, 0, 0, 0,verbose);
-	V4l2Capture* videoCapture = createVideoCapure(param, useMmap);
+	V4l2Capture* videoCapture = V4l2DeviceFactory::CreateVideoCapure(param, useMmap);
 	
 	if (videoCapture == NULL)
 	{	

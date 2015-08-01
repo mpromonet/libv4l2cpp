@@ -5,7 +5,7 @@
 **
 ** V4l2Capture.h
 ** 
-** V4L2 wrapper 
+** V4L2 Capture wrapper 
 **
 ** -------------------------------------------------------------------------*/
 
@@ -17,21 +17,7 @@
 #include <list> 
 #include <iostream>
 
-// ---------------------------------
-// V4L2 Capture parameters
-// ---------------------------------
-struct V4L2DeviceParameters 
-{
-	V4L2DeviceParameters(const char* devname, unsigned int format, unsigned int width, unsigned int height, int fps, int verbose) : 
-		m_devName(devname), m_format(format), m_width(width), m_height(height), m_fps(fps), m_verbose(verbose) {};
-		
-	std::string m_devName;
-	unsigned int m_format;
-	unsigned int m_width;
-	unsigned int m_height;
-	int m_fps;			
-	int m_verbose;
-};
+#include "V4l2Device.h"
 
 // ---------------------------------
 // V4L2 Capture
@@ -77,20 +63,5 @@ class V4l2Capture
 		int m_height;
 };
 
-// ---------------------------------
-// V4L2 Output
-// ---------------------------------
-class V4l2Output
-{		
-	public:
-		V4l2Output(const V4L2DeviceParameters&  params);
-		virtual ~V4l2Output();
-	
-	public:
-		int getFd() { return m_fd; };		
-		
-	protected:
-		int m_fd;
-};
 
 #endif

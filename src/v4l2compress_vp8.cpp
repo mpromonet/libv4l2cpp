@@ -3,7 +3,9 @@
 ** support, and with no warranty, express or implied, as to its usefulness for
 ** any purpose.
 **
-** v4l2vp8.cpp
+** v4l2compress_vp8.cpp
+** 
+** Read YUYV from a V4L2 capture -> compress in VP8 -> write to a V4L2 output device
 ** 
 ** -------------------------------------------------------------------------*/
 
@@ -23,26 +25,9 @@
 
 #include "logger.h"
 
-#include "V4l2MmapCapture.h"
-#include "V4l2ReadCapture.h"
-
-// -----------------------------------------
-//    create video capture interface
-// -----------------------------------------
-V4l2Capture* createVideoCapure(const V4L2DeviceParameters & param, bool useMmap)
-{
-	V4l2Capture* videoCapture = NULL;
-	if (useMmap)
-	{
-		videoCapture = V4l2MmapCapture::createNew(param);
-	}
-	else
-	{
-		videoCapture = V4l2ReadCapture::createNew(param);
-	}
-	return videoCapture;
-}
-
+#include "V4l2Device.h"
+#include "V4l2Capture.h"
+#include "V4l2Output.h"
 
 /* ---------------------------------------------------------------------------
 **  main
@@ -116,7 +101,7 @@ int main(int argc, char* argv[])
 	// init V4L2 capture interface
 	int format = V4L2_PIX_FMT_YUYV;
 	V4L2DeviceParameters param(in_devname,format,width,height,fps,verbose);
-	V4l2Capture* videoCapture = createVideoCapure(param, useMmap);
+	V4l2Capture* videoCapture = V4l2DeviceFactory::CreateVideoCapure(param, useMmap);
 	
 	if (videoCapture == NULL)
 	{	
@@ -144,7 +129,7 @@ int main(int argc, char* argv[])
 				char buffer[videoCapture->getBufferSize()];
 				int rsize = videoCapture->read(buffer, sizeof(buffer));
 				
-				ConvertToI420(buffer, rsize,
+				ConvertToI420((const uint8*)buffer, rsize,
 					raw.planes[0], width,
 					raw.planes[1], width/2,
 					raw.planes[2], width/2,

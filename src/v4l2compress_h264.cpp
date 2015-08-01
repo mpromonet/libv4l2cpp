@@ -3,8 +3,10 @@
 ** support, and with no warranty, express or implied, as to its usefulness for
 ** any purpose.
 **
-** v4l2x264.cpp
+** v4l2compress_x264.cpp
 ** 
+** Read YUYV from a V4L2 capture -> compress in H264 -> write to a V4L2 output device
+**
 ** -------------------------------------------------------------------------*/
 
 #include <unistd.h>
@@ -27,34 +29,16 @@ extern "C"
 
 #include "logger.h"
 
-#include "V4l2MmapCapture.h"
-#include "V4l2ReadCapture.h"
+#include "V4l2Device.h"
+#include "V4l2Capture.h"
+#include "V4l2Output.h"
 
 int stop=0;
 void sighandler(int)
 { 
-	printf("SIGINT\n");
-	stop =1;
+       printf("SIGINT\n");
+       stop =1;
 }
-
-
-// -----------------------------------------
-//    create video capture interface
-// -----------------------------------------
-V4l2Capture* createVideoCapure(const V4L2DeviceParameters & param, bool useMmap)
-{
-	V4l2Capture* videoCapture = NULL;
-	if (useMmap)
-	{
-		videoCapture = V4l2MmapCapture::createNew(param);
-	}
-	else
-	{
-		videoCapture = V4l2ReadCapture::createNew(param);
-	}
-	return videoCapture;
-}
-
 
 /* ---------------------------------------------------------------------------
 **  main
@@ -111,7 +95,7 @@ int main(int argc, char* argv[])
 	// init V4L2 capture interface
 	int format = V4L2_PIX_FMT_YUYV;
 	V4L2DeviceParameters param(in_devname,format,width,height,fps,verbose);
-	V4l2Capture* videoCapture = createVideoCapure(param, useMmap);
+	V4l2Capture* videoCapture = V4l2DeviceFactory::CreateVideoCapure(param, useMmap);
 	
 	if (videoCapture == NULL)
 	{	
@@ -217,7 +201,7 @@ int main(int argc, char* argv[])
 						for (int i=0; i < i_nals; ++i)
 						{
 							int wsize = write(out.getFd(), nals[i].p_payload, nals[i].i_payload);
-							LOG(DEBUG) << "Copied " << i << "/" << i_nals << " size:" << wsize; 					
+							LOG(INFO) << "Copied " << i << "/" << i_nals << " size:" << wsize; 					
 						}
 					}
 					
