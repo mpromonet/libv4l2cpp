@@ -11,7 +11,7 @@ LDFLAGS += -lv4l2
 
 V4L2WRAPPER=src/V4l2Device.cpp src/V4l2Output.cpp src/V4l2Capture.cpp src/V4l2MmapCapture.cpp src/V4l2ReadCapture.cpp
 
-all: $(ALL_PROGS)
+.DEFAULT_GOAL := all
 
 # raspberry grab -> compress H264 -> write V4L2 output
 ILCLIENTDIR=/opt/vc/src/hello_pi/libs/ilclient
@@ -22,11 +22,17 @@ LDFLAGS +=-L /opt/vc/lib -L $(ILCLIENTDIR) -lpthread -lopenmaxil -lbcm_host -lvc
 v4l2grab_h264: src/v4l2grab_h264.cpp src/V4l2Output.cpp $(ILCLIENTDIR)/libilclient.a
 	$(CC) -o $@ $^ -DHAVE_LIBBCM_HOST -DUSE_EXTERNAL_LIBBCM_HOST -DUSE_VCHIQ_ARM -Wno-psabi $(CFLAGS) $(LDFLAGS) 
 
+v4l2display_h264: src/v4l2display_h264.cpp $(V4L2WRAPPER) $(ILCLIENTDIR)/libilclient.a
+	$(CC) -o $@ $^ -DHAVE_LIBBCM_HOST -DUSE_EXTERNAL_LIBBCM_HOST -DUSE_VCHIQ_ARM -Wno-psabi $(CFLAGS) $(LDFLAGS) 
+
 $(ILCLIENTDIR)/libilclient.a:
 	make -C $(ILCLIENTDIR)
 	
 ALL_PROGS+=v4l2grab_h264
+ALL_PROGS+=v4l2display_h264
 endif
+
+all: $(ALL_PROGS)
 
 libyuv/source/*.cc:
 	git submodule init libyuv

@@ -225,12 +225,15 @@ bool encode_config_activate(COMPONENT_T* handle)
 	return true;
 }
 
-void encode_deinit(COMPONENT_T* handle, COMPONENT_T **list, ILCLIENT_T *client)
+void encode_deactivate(COMPONENT_T* handle)
 {
 	fprintf(stderr, "disabling port buffers for 200 and 201...\n");
 	ilclient_disable_port_buffers(handle, 200, NULL, NULL, NULL);
 	ilclient_disable_port_buffers(handle, 201, NULL, NULL, NULL);
+}
 
+void encode_deinit(COMPONENT_T **list, ILCLIENT_T *client)
+{
 	ilclient_state_transition(list, OMX_StateIdle);
 	ilclient_state_transition(list, OMX_StateLoaded);
 
@@ -287,13 +290,9 @@ int main(int argc, char **argv)
 	V4L2DeviceParameters outparam(argv[1], V4L2_PIX_FMT_H264,  info.width, info.height, 0, true);
 	V4l2Output outDev(outparam);	
 
-	COMPONENT_T *list[5];
-	memset(list, 0, sizeof(list));
 	ILCLIENT_T *client = encode_init(&video_encode);
 	if (client)
 	{
-		list[0] = video_encode;
-
 		encode_config_input(video_encode, info.width, info.height, 30);
 		encode_config_output(video_encode, OMX_VIDEO_CodingAVC, 10000000);
 
@@ -342,9 +341,11 @@ int main(int argc, char **argv)
 		} while (framenumber < NUMFRAMES);
 		
 		fprintf(stderr, "Exit\n");
-	}
-
-	encode_deinit(video_encode, list, client);
+		
+		encode_deactivate(video_encode);
+		COMPONENT_T *list[] = {video_encode , NULL};
+		encode_deinit(list, client);		
+	}	
 	
 	return status;
 }
