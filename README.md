@@ -18,16 +18,14 @@ Dependencies
  
 To create a V4L2 Capture interface :
 ------------------------------------
-{{{
+
 	V4L2DeviceParameters param("/dev/video0", V4L2_PIX_FMT_*, width, height, fps, verbose);
 	V4l2Capture* videoCapture = V4l2DeviceFactory::CreateVideoCapure(param, useMmap);
-}}}
 
 
 To create a V4L2 Output interface :
 ------------------------------------
-{{{
+
         V4L2DeviceParameters param("/dev/video0", V4L2_PIX_FMT_*, width, height, fps, verbose);
         V4l2Output videoOutput(param);
-}}}
 
