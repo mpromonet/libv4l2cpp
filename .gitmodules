@@ -1,3 +1,0 @@
-[submodule "libyuv"]
-	path = libyuv
-	url = https://github.com/openpeer/libyuv
