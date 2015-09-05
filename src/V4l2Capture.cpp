@@ -115,41 +115,40 @@ int V4l2Capture::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 // configure capture format 
 int V4l2Capture::configureFormat(int fd)
 {
-	if (m_params.m_format!=0) 
-	{
-		struct v4l2_format   fmt;			
-		memset(&(fmt), 0, sizeof(fmt));
-		fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		fmt.fmt.pix.width       = m_params.m_width;
-		fmt.fmt.pix.height      = m_params.m_height;
-		fmt.fmt.pix.pixelformat = m_params.m_format;
-		fmt.fmt.pix.field       = V4L2_FIELD_ANY;
-		
-		if (xioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
-		{
-			LOG(ERROR) << "Cannot set format for device:" << m_params.m_devName << " " << strerror(errno);
-			return -1;
-		}			
-		if (fmt.fmt.pix.pixelformat != m_params.m_format) 
-		{
-			char formatArray[] = { (fmt.fmt.pix.pixelformat&0xff), ((fmt.fmt.pix.pixelformat>>8)&0xff), ((fmt.fmt.pix.pixelformat>>16)&0xff), ((fmt.fmt.pix.pixelformat>>24)&0xff), 0 };
-			LOG(ERROR) << "Cannot set pixelformat to:" << formatArray;
-			return -1;
-		}
-		if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
-		{
-			LOG(WARN) << "Cannot set size width:" << fmt.fmt.pix.width << " height:" << fmt.fmt.pix.height;
-		}
-		
-		m_format     = fmt.fmt.pix.pixelformat;
-		m_width      = fmt.fmt.pix.width;
-		m_height     = fmt.fmt.pix.height;		
-		m_bufferSize = fmt.fmt.pix.sizeimage;
-	}
-	else
+	
+	if (m_params.m_format==0) 
 	{
 		this->queryFormat();
+	}		
+		
+	struct v4l2_format   fmt;			
+	memset(&(fmt), 0, sizeof(fmt));
+	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	fmt.fmt.pix.width       = m_params.m_width;
+	fmt.fmt.pix.height      = m_params.m_height;
+	fmt.fmt.pix.pixelformat = m_params.m_format;
+	fmt.fmt.pix.field       = V4L2_FIELD_ANY;
+	
+	if (xioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
+	{
+		LOG(ERROR) << "Cannot set format for device:" << m_params.m_devName << " " << strerror(errno);
+		return -1;
+	}			
+	if (fmt.fmt.pix.pixelformat != m_params.m_format) 
+	{
+		char formatArray[] = { (fmt.fmt.pix.pixelformat&0xff), ((fmt.fmt.pix.pixelformat>>8)&0xff), ((fmt.fmt.pix.pixelformat>>16)&0xff), ((fmt.fmt.pix.pixelformat>>24)&0xff), 0 };
+		LOG(ERROR) << "Cannot set pixelformat to:" << formatArray;
+		return -1;
 	}
+	if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
+	{
+		LOG(WARN) << "Cannot set size width:" << fmt.fmt.pix.width << " height:" << fmt.fmt.pix.height;
+	}
+	
+	m_format     = fmt.fmt.pix.pixelformat;
+	m_width      = fmt.fmt.pix.width;
+	m_height     = fmt.fmt.pix.height;		
+	m_bufferSize = fmt.fmt.pix.sizeimage;
 	
 	char formatArray[] = { (m_format&0xff), ((m_format>>8)&0xff), ((m_format>>16)&0xff), ((m_format>>24)&0xff), 0 };
 	LOG(NOTICE) << m_params.m_devName << ":" << formatArray << " size:" << m_params.m_width << "x" << m_params.m_height << " bufferSize:" << m_bufferSize;
