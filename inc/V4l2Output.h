@@ -25,7 +25,8 @@ class V4l2Output
 		virtual ~V4l2Output();
 	
 	public:
-		int getFd() { return m_fd; };		
+		int getFd() { return m_fd; };	
+		virtual size_t write(char* buffer, size_t bufferSize);
 		
 	protected:
 		int m_fd;

@@ -29,3 +29,11 @@ V4l2Capture* V4l2DeviceFactory::CreateVideoCapure(const V4L2DeviceParameters & p
 	return videoCapture;
 }
 
+#include "V4l2Output.h"
+// -----------------------------------------
+//    create video output interface
+// -----------------------------------------
+V4l2Output* V4l2DeviceFactory::CreateVideoOutput(const V4L2DeviceParameters & param, bool useMmap)
+{
+	return new V4l2Output(param);
+}

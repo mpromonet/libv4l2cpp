@@ -69,7 +69,13 @@ V4l2Output::V4l2Output(const V4L2DeviceParameters& params) : m_fd(-1)
 	{
 		LOG(NOTICE) << "Error openning " << params.m_devName << " " << strerror(errno);
 	}
-}	
+}
+
+// write
+size_t V4l2Output::write(char* buffer, size_t bufferSize)
+{
+	return ::write(m_fd, buffer,  bufferSize);
+}
 
 // Destructor
 V4l2Output::~V4l2Output()

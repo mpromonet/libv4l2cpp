@@ -32,11 +32,13 @@ struct V4L2DeviceParameters
 };
 
 class V4l2Capture;
+class V4l2Output;
 
 class V4l2DeviceFactory
 {
 	public:
 		static V4l2Capture * CreateVideoCapure(const V4L2DeviceParameters & param, bool useMmap);
+		static V4l2Output *  CreateVideoOutput(const V4L2DeviceParameters & param, bool useMmap);
 };
 
 #endif
