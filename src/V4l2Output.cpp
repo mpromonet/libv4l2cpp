@@ -25,13 +25,13 @@
 #include "V4l2Output.h"
 
 // Constructor
-V4l2Output::V4l2Output(const V4L2DeviceParameters& params) : m_fd(-1)
+V4l2Output::V4l2Output(const V4L2DeviceParameters& params) : V4l2Device(params)
 {
 	struct stat sb;		
 	if ( (stat(params.m_devName.c_str(), &sb)==0) && ((sb.st_mode & S_IFMT) == S_IFCHR) ) 
 	{
 		// open & initialize a V4L2 output
-		m_fd = open(params.m_devName.c_str(), O_WRONLY);
+		m_fd = open(params.m_devName.c_str(), O_RDWR | O_NONBLOCK);
 		if (m_fd != -1)
 		{
 			struct v4l2_capability cap;
@@ -80,6 +80,5 @@ size_t V4l2Output::write(char* buffer, size_t bufferSize)
 // Destructor
 V4l2Output::~V4l2Output()
 {
-	if (m_fd !=-1) v4l2_close(m_fd);
-}
+} 
 

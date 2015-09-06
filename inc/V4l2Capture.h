@@ -22,7 +22,7 @@
 // ---------------------------------
 // V4L2 Capture
 // ---------------------------------
-class V4l2Capture
+class V4l2Capture : public virtual V4l2Device
 {		
 	protected:
 		V4l2Capture(const V4L2DeviceParameters&  params);
@@ -31,7 +31,6 @@ class V4l2Capture
 		virtual ~V4l2Capture();
 	
 	public:
-		int getFd() { return m_fd; };		
 		int getBufferSize() { return m_bufferSize; };
 		int getFormat() { return m_format; } ;
 		int getWidth() { return m_width; };
@@ -40,13 +39,11 @@ class V4l2Capture
 
 	protected:
 		bool init(unsigned int mandatoryCapabilities);
-		void close();
 	
 		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);
 		int checkCapabilities(int fd, unsigned int mandatoryCapabilities);
 		int configureFormat(int fd);
 		int configureParam(int fd);		
-		int xioctl(int fd, int request, void *arg);
 				
 	public:
 		virtual bool captureStart() = 0;
@@ -55,8 +52,6 @@ class V4l2Capture
 		virtual bool isReady() = 0;
 		
 	protected:
-		V4L2DeviceParameters m_params;
-		int m_fd;
 		int m_bufferSize;
 		int m_format;
 		int m_width;

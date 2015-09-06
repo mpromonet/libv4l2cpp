@@ -31,9 +31,32 @@ struct V4L2DeviceParameters
 	int m_verbose;
 };
 
+// ---------------------------------
+// V4L2 Device
+// ---------------------------------
+class V4l2Device
+{		
+	protected:
+		V4l2Device(const V4L2DeviceParameters&  params);
+		int xioctl(int fd, int request, void *arg); 	
+		void close();	
+	
+	public:
+		virtual ~V4l2Device();
+	
+	public:
+		int getFd() { return m_fd; };		
+
+	protected:
+		V4L2DeviceParameters m_params;
+		int m_fd;
+};
+
+// ---------------------------------
+// V4L2 Device factory
+// ---------------------------------
 class V4l2Capture;
 class V4l2Output;
-
 class V4l2DeviceFactory
 {
 	public:

@@ -25,14 +25,13 @@
 #include "V4l2Capture.h"
 
 // Constructor
-V4l2Capture::V4l2Capture(const V4L2DeviceParameters& params) : m_params(params), m_fd(-1), m_bufferSize(0), m_format(0)
+V4l2Capture::V4l2Capture(const V4L2DeviceParameters& params) : V4l2Device(params), m_bufferSize(0), m_format(0)
 {
 }
 
 // Destructor
 V4l2Capture::~V4l2Capture()
 {
-	if (m_fd !=-1) v4l2_close(m_fd);
 }
 
 // intialize the V4L2 connection
@@ -43,13 +42,6 @@ bool V4l2Capture::init(unsigned int mandatoryCapabilities)
 		LOG(ERROR) << "Cannot init device:" << m_params.m_devName;
 	}
 	return (m_fd!=-1);
-}
-
-// close the V4L2 connection
-void V4l2Capture::close()
-{
-	if (m_fd != -1) v4l2_close(m_fd);
-	m_fd = -1;
 }
 
 // intialize the V4L2 device
@@ -112,6 +104,12 @@ int V4l2Capture::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 	return 0;
 }
 
+std::string fourcc(unsigned int format)
+{
+	char formatArray[] = { (format&0xff), ((format>>8)&0xff), ((format>>16)&0xff), ((format>>24)&0xff), 0 };
+	return std::string(formatArray, strlen(formatArray));
+}
+
 // configure capture format 
 int V4l2Capture::configureFormat(int fd)
 {
@@ -119,6 +117,9 @@ int V4l2Capture::configureFormat(int fd)
 	if (m_params.m_format==0) 
 	{
 		this->queryFormat();
+		m_params.m_format = m_format;
+		m_params.m_width  = m_width;
+		m_params.m_height = m_height;
 	}		
 		
 	struct v4l2_format   fmt;			
@@ -136,8 +137,7 @@ int V4l2Capture::configureFormat(int fd)
 	}			
 	if (fmt.fmt.pix.pixelformat != m_params.m_format) 
 	{
-		char formatArray[] = { (fmt.fmt.pix.pixelformat&0xff), ((fmt.fmt.pix.pixelformat>>8)&0xff), ((fmt.fmt.pix.pixelformat>>16)&0xff), ((fmt.fmt.pix.pixelformat>>24)&0xff), 0 };
-		LOG(ERROR) << "Cannot set pixelformat to:" << formatArray;
+		LOG(ERROR) << "Cannot set pixelformat to:" << fourcc(m_params.m_format) << " format is:" << fourcc(fmt.fmt.pix.pixelformat);
 		return -1;
 	}
 	if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
@@ -150,8 +150,7 @@ int V4l2Capture::configureFormat(int fd)
 	m_height     = fmt.fmt.pix.height;		
 	m_bufferSize = fmt.fmt.pix.sizeimage;
 	
-	char formatArray[] = { (m_format&0xff), ((m_format>>8)&0xff), ((m_format>>16)&0xff), ((m_format>>24)&0xff), 0 };
-	LOG(NOTICE) << m_params.m_devName << ":" << formatArray << " size:" << m_params.m_width << "x" << m_params.m_height << " bufferSize:" << m_bufferSize;
+	LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_params.m_width << "x" << m_params.m_height << " bufferSize:" << m_bufferSize;
 	
 	return 0;
 }
@@ -192,16 +191,4 @@ void V4l2Capture::queryFormat()
 	}
 }
 
-// ioctl encapsulation
-int V4l2Capture::xioctl(int fd, int request, void *arg)
-{
-	int ret = -1;
-	errno=0;
-	do 
-	{
-		ret = v4l2_ioctl(fd, request, arg);
-	} while ((ret == -1) && ((errno == EINTR) || (errno == EAGAIN)));
-
-	return ret;
-}
 				

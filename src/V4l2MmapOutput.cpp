@@ -3,9 +3,9 @@
 ** support, and with no warranty, express or implied, as to its usefulness for
 ** any purpose.
 **
-** V4l2MmapCapture.cpp
+** V4l2MmapOutput.cpp
 ** 
-** V4L2 source using mmap API
+** V4L2 output using mmap API
 **
 ** -------------------------------------------------------------------------*/
 
@@ -20,24 +20,30 @@
 
 // project
 #include "logger.h"
-#include "V4l2MmapCapture.h"
+#include "V4l2MmapOutput.h"
 
-V4l2MmapCapture* V4l2MmapCapture::createNew(V4L2DeviceParameters params) 
+V4l2MmapOutput* V4l2MmapOutput::createNew(V4L2DeviceParameters params) 
 { 
-	V4l2MmapCapture* device = new V4l2MmapCapture(params); 
-	if (device && !device->init(V4L2_CAP_STREAMING))
+	V4l2MmapOutput* device = new V4l2MmapOutput(params); 
+		
+/*	if (device &&  !device->init(V4L2_CAP_STREAMING))
 	{
 		delete device;
-		device=NULL;
+		device=NULL; 
+	}*/
+	if (device)
+	{
+		device->captureStart();
 	}
 	return device;
 }
 
-V4l2MmapCapture::V4l2MmapCapture(V4L2DeviceParameters params) : V4l2Device(params), V4l2MmapDevice(params, V4L2_BUF_TYPE_VIDEO_CAPTURE), V4l2Capture(params)
+V4l2MmapOutput::V4l2MmapOutput(V4L2DeviceParameters params) : V4l2Device(params), V4l2MmapDevice(params, V4L2_BUF_TYPE_VIDEO_OUTPUT), V4l2Output(params) 
 {
 }
 
-size_t V4l2MmapCapture::read(char* buffer, size_t bufferSize)
+
+size_t V4l2MmapOutput::write(char* buffer, size_t bufferSize)
 {
 	size_t size = 0;
 	if (n_buffers > 0)
@@ -54,13 +60,14 @@ size_t V4l2MmapCapture::read(char* buffer, size_t bufferSize)
 		}
 		else if (buf.index < n_buffers)
 		{
-			size = buf.bytesused;
-			if (size > bufferSize)
+			size = bufferSize;
+			if (size > buf.length)
 			{
-				size = bufferSize;
-				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << bufferSize << " needed:" << buf.bytesused;
+				size = buf.length;
+				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << buf.length << " needed:" << size;
 			}
-			memcpy(buffer, m_buffer[buf.index].start, size);
+			memcpy(m_buffer[buf.index].start, buffer, size);
+			buf.bytesused = size;
 
 			if (-1 == xioctl(m_fd, VIDIOC_QBUF, &buf))
 			{

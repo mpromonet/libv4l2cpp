@@ -18,18 +18,15 @@
 // ---------------------------------
 // V4L2 Output
 // ---------------------------------
-class V4l2Output
+class V4l2Output : public virtual V4l2Device
 {		
 	public:
 		V4l2Output(const V4L2DeviceParameters&  params);
 		virtual ~V4l2Output();
 	
 	public:
-		int getFd() { return m_fd; };	
 		virtual size_t write(char* buffer, size_t bufferSize);
 		
-	protected:
-		int m_fd;
 };
 
 #endif
