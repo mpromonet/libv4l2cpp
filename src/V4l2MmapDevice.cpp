@@ -22,7 +22,7 @@
 #include "logger.h"
 #include "V4l2MmapDevice.h"
 
-V4l2MmapDevice::V4l2MmapDevice(V4L2DeviceParameters params, int deviceType) : V4l2Device(params), m_deviceType(deviceType), n_buffers(0) 
+V4l2MmapDevice::V4l2MmapDevice(V4L2DeviceParameters params, v4l2_buf_type deviceType) : V4l2Device(params), m_deviceType(deviceType), n_buffers(0) 
 {
 	memset(&m_buffer, 0, sizeof(m_buffer));
 }
