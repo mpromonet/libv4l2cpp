@@ -44,7 +44,7 @@ size_t V4l2MmapCapture::read(char* buffer, size_t bufferSize)
 	{
 		struct v4l2_buffer buf;	
 		memset (&buf, 0, sizeof(buf));
-		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		buf.type = m_deviceType;
 		buf.memory = V4L2_MEMORY_MMAP;
 
 		if (-1 == xioctl(m_fd, VIDIOC_DQBUF, &buf)) 
