@@ -27,7 +27,6 @@ class V4l2MmapDevice : public virtual V4l2Device
 		virtual bool isReady() { return  ((m_fd != -1)&& (n_buffers != 0)); };
 	
 	protected:
-		v4l2_buf_type m_deviceType;
 		unsigned int  n_buffers;
 	
 		struct buffer 

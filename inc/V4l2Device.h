@@ -37,19 +37,35 @@ struct V4L2DeviceParameters
 class V4l2Device
 {		
 	protected:
-		V4l2Device(const V4L2DeviceParameters&  params);
+		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);
+	
 		int xioctl(int fd, int request, void *arg); 	
+		bool init(unsigned int mandatoryCapabilities);
 		void close();	
+	
+		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);
+		int checkCapabilities(int fd, unsigned int mandatoryCapabilities);
+		int configureFormat(int fd);
+		int configureParam(int fd);		
 	
 	public:
 		virtual ~V4l2Device();
-	
-	public:
+		int getBufferSize() { return m_bufferSize; };
+		int getFormat() { return m_format; } ;
+		int getWidth() { return m_width; };
+		int getHeight() { return m_height; };
+		void queryFormat();	
 		int getFd() { return m_fd; };		
 
 	protected:
 		V4L2DeviceParameters m_params;
 		int m_fd;
+		v4l2_buf_type m_deviceType;	
+	
+		int m_bufferSize;
+		int m_format;
+		int m_width;
+		int m_height;	
 };
 
 // ---------------------------------

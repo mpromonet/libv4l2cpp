@@ -28,22 +28,7 @@ class V4l2Capture : public virtual V4l2Device
 		V4l2Capture(const V4L2DeviceParameters&  params);
 	
 	public:
-		virtual ~V4l2Capture();
-	
-	public:
-		int getBufferSize() { return m_bufferSize; };
-		int getFormat() { return m_format; } ;
-		int getWidth() { return m_width; };
-		int getHeight() { return m_height; };
-		void queryFormat();
-
-	protected:
-		bool init(unsigned int mandatoryCapabilities);
-	
-		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);
-		int checkCapabilities(int fd, unsigned int mandatoryCapabilities);
-		int configureFormat(int fd);
-		int configureParam(int fd);		
+		virtual ~V4l2Capture();	
 				
 	public:
 		virtual bool captureStart() = 0;
@@ -51,11 +36,6 @@ class V4l2Capture : public virtual V4l2Device
 		virtual bool captureStop() = 0;
 		virtual bool isReady() = 0;
 		
-	protected:
-		int m_bufferSize;
-		int m_format;
-		int m_width;
-		int m_height;
 };
 
 
