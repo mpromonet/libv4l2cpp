@@ -204,19 +204,22 @@ int V4l2Device::configureFormat(int fd)
 // configure capture FPS 
 int V4l2Device::configureParam(int fd)
 {
-	struct v4l2_streamparm   param;			
-	memset(&(param), 0, sizeof(param));
-	param.type = m_deviceType;
-	param.parm.capture.timeperframe.numerator = 1;
-	param.parm.capture.timeperframe.denominator = m_params.m_fps;
-
-	if (xioctl(fd, VIDIOC_S_PARM, &param) == -1)
+	if (m_params.m_fps==0) 
 	{
-		LOG(WARN) << "Cannot set param for device:" << m_params.m_devName << " " << strerror(errno);
-	}
+		struct v4l2_streamparm   param;			
+		memset(&(param), 0, sizeof(param));
+		param.type = m_deviceType;
+		param.parm.capture.timeperframe.numerator = 1;
+		param.parm.capture.timeperframe.denominator = m_params.m_fps;
+
+		if (xioctl(fd, VIDIOC_S_PARM, &param) == -1)
+		{
+			LOG(WARN) << "Cannot set param for device:" << m_params.m_devName << " " << strerror(errno);
+		}
 	
-	LOG(NOTICE) << "fps:" << param.parm.capture.timeperframe.numerator << "/" << param.parm.capture.timeperframe.denominator;
-	LOG(NOTICE) << "nbBuffer:" << param.parm.capture.readbuffers;
+		LOG(NOTICE) << "fps:" << param.parm.capture.timeperframe.numerator << "/" << param.parm.capture.timeperframe.denominator;
+		LOG(NOTICE) << "nbBuffer:" << param.parm.capture.readbuffers;
+	}
 	
 	return 0;
 }
