@@ -18,7 +18,6 @@
 
 // libv4l2
 #include <linux/videodev2.h>
-#include <libv4l2.h>
 
 // project
 #include "logger.h"

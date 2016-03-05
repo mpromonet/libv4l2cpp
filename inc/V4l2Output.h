@@ -21,8 +21,11 @@
 class V4l2Output : public virtual V4l2Device
 {		
 	public:
-		V4l2Output(const V4L2DeviceParameters&  params);
+		static V4l2Output* createNew(const V4L2DeviceParameters& params) ;
 		virtual ~V4l2Output();
+
+	protected:
+		V4l2Output(const V4L2DeviceParameters&  params);
 	
 	public:
 		virtual size_t write(char* buffer, size_t bufferSize);

@@ -10,9 +10,10 @@
 ** -------------------------------------------------------------------------*/
 
 
+#include <unistd.h>
+
 // libv4l2
 #include <linux/videodev2.h>
-#include <libv4l2.h>
 
 // project
 #include "V4l2ReadCapture.h"
@@ -31,7 +32,7 @@ V4l2ReadCapture* V4l2ReadCapture::createNew(V4L2DeviceParameters params)
 
 size_t V4l2ReadCapture::read(char* buffer, size_t bufferSize)
 {
-	return v4l2_read(m_fd, buffer,  bufferSize);
+	return ::read(m_fd, buffer,  bufferSize);
 }
 
 

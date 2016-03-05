@@ -14,7 +14,6 @@
 
 // libv4l2
 #include <linux/videodev2.h>
-#include <libv4l2.h>
 
 #include "logger.h"
 
@@ -50,7 +49,7 @@ int V4l2Device::xioctl(int fd, int request, void *arg)
 	errno=0;
 	do 
 	{
-		ret = v4l2_ioctl(fd, request, arg);
+		ret = ioctl(fd, request, arg);
 	} while ((ret == -1) && ((errno == EINTR) || (errno == EAGAIN)));
 
 	return ret;
@@ -74,9 +73,18 @@ void V4l2Device::queryFormat()
 // intialize the V4L2 connection
 bool V4l2Device::init(unsigned int mandatoryCapabilities)
 {
-	if (initdevice(m_params.m_devName.c_str(), mandatoryCapabilities) == -1)
+        struct stat sb;
+        if ( (stat(m_params.m_devName.c_str(), &sb)==0) && ((sb.st_mode & S_IFMT) == S_IFCHR) )
+        {
+		if (initdevice(m_params.m_devName.c_str(), mandatoryCapabilities) == -1)
+		{
+			LOG(ERROR) << "Cannot init device:" << m_params.m_devName;
+		}
+	}
+	else
 	{
-		LOG(ERROR) << "Cannot init device:" << m_params.m_devName;
+                // open a normal file
+                m_fd = open(m_params.m_devName.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
 	}
 	return (m_fd!=-1);
 }
@@ -84,7 +92,7 @@ bool V4l2Device::init(unsigned int mandatoryCapabilities)
 // intialize the V4L2 device
 int V4l2Device::initdevice(const char *dev_name, unsigned int mandatoryCapabilities)
 {
-	m_fd = v4l2_open(dev_name, O_RDWR | O_NONBLOCK, 0);
+	m_fd = open(dev_name,  O_RDWR | O_NONBLOCK);
 	if (m_fd < 0) 
 	{
 		LOG(ERROR) << "Cannot open device:" << m_params.m_devName << " " << strerror(errno);
@@ -245,7 +253,7 @@ V4l2Output* V4l2DeviceFactory::CreateVideoOutput(const V4L2DeviceParameters & pa
 	}
 	else
 	{
-		videoOutput = new V4l2Output(param);
+		videoOutput = V4l2Output::createNew(param);
 	}
 	return videoOutput;	
 }
