@@ -14,6 +14,7 @@
 #define V4L2_DEVICE
 
 #include <string>
+#include <linux/videodev2.h>
 
 // ---------------------------------
 // V4L2 Device parameters
