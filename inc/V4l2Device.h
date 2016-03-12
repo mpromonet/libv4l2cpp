@@ -77,8 +77,13 @@ class V4l2Output;
 class V4l2DeviceFactory
 {
 	public:
-		static V4l2Capture * CreateVideoCapure(const V4L2DeviceParameters & param, bool useMmap);
-		static V4l2Output *  CreateVideoOutput(const V4L2DeviceParameters & param, bool useMmap);
+		enum IoType
+		{
+			IOTYPE_READ,
+			IOTYPE_MMAP,
+		};
+		static V4l2Capture* CreateVideoCapure(const V4L2DeviceParameters & param, IoType iotype);
+		static V4l2Output*  CreateVideoOutput(const V4L2DeviceParameters & param, IoType iotype);
 };
 
 #endif

@@ -25,10 +25,8 @@ class V4l2ReadCapture : public V4l2Capture
 		V4l2ReadCapture(V4L2DeviceParameters params) : V4l2Device(params,V4L2_BUF_TYPE_VIDEO_CAPTURE), V4l2Capture(params), m_counter(0) {};
 			
 	public:
-		virtual bool captureStart() { m_counter=1; return true; };
 		virtual size_t read(char* buffer, size_t bufferSize);
-		virtual bool captureStop() { m_counter=0; return true; };
-		virtual bool isReady() { return ((m_fd != -1) && (m_counter>0)); };
+		virtual bool isReady() { return (m_fd != -1); };
 	
 	protected:
 		int m_counter;

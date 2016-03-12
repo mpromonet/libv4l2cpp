@@ -31,9 +31,7 @@ class V4l2Capture : public virtual V4l2Device
 		virtual ~V4l2Capture();	
 				
 	public:
-		virtual bool captureStart() = 0;
 		virtual size_t read(char* buffer, size_t bufferSize) = 0;
-		virtual bool captureStop() = 0;
 		virtual bool isReady() = 0;
 		
 };

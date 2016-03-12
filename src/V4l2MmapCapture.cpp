@@ -29,6 +29,10 @@ V4l2MmapCapture* V4l2MmapCapture::createNew(V4L2DeviceParameters params)
 		delete device;
 		device=NULL;
 	}
+	if (device)
+	{
+		device->captureStart();
+	}	
 	return device;
 }
 
