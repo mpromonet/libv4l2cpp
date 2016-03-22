@@ -204,7 +204,7 @@ int V4l2Device::configureFormat(int fd)
 // configure capture FPS 
 int V4l2Device::configureParam(int fd)
 {
-	if (m_params.m_fps==0) 
+	if (m_params.m_fps!=0)
 	{
 		struct v4l2_streamparm   param;			
 		memset(&(param), 0, sizeof(param));
