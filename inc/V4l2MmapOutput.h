@@ -26,9 +26,7 @@ class V4l2MmapOutput : public V4l2MmapDevice, public V4l2Output
 		V4l2MmapOutput(V4L2DeviceParameters params);
 			
 	public:
-		virtual bool captureStart() { return V4l2MmapDevice::captureStart(); };
 		virtual size_t write(char* buffer, size_t bufferSize);
-		virtual bool captureStop() { return V4l2MmapDevice::captureStop(); };;
 };
 
 #endif
