@@ -129,13 +129,7 @@ int V4l2Device::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 		return -1;
 	}
 	LOG(NOTICE) << "driver:" << cap.driver << " " << std::hex << cap.capabilities;
-	
-	if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) 
-	{
-		LOG(ERROR) << "No capture support for device:" << m_params.m_devName << " " << strerror(errno);
-		return -1;
-	}
-	
+		
 	if ((cap.capabilities & V4L2_CAP_READWRITE))    LOG(NOTICE) << m_params.m_devName << " support read/write";
 	if ((cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)) LOG(NOTICE) << m_params.m_devName << " support output";
 	if ((cap.capabilities & V4L2_CAP_STREAMING))    LOG(NOTICE) << m_params.m_devName << " support streaming";

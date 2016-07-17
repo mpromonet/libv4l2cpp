@@ -25,7 +25,7 @@ V4l2MmapOutput* V4l2MmapOutput::createNew(V4L2DeviceParameters params)
 { 
 	V4l2MmapOutput* device = new V4l2MmapOutput(params); 
 		
-	if (device &&  !device->init(V4L2_CAP_STREAMING))
+	if (device &&  !device->init(V4L2_CAP_VIDEO_OUTPUT|V4L2_CAP_STREAMING))
 	{
 		delete device;
 		device=NULL; 

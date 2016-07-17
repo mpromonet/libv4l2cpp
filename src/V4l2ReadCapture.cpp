@@ -22,7 +22,7 @@
 V4l2ReadCapture* V4l2ReadCapture::createNew(V4L2DeviceParameters params) 
 { 
 	V4l2ReadCapture* device = new V4l2ReadCapture(params); 
-	if (device && !device->init(V4L2_CAP_READWRITE))
+	if (device && !device->init(V4L2_CAP_VIDEO_CAPTURE|V4L2_CAP_READWRITE))
 	{
 		delete device;
 		device=NULL;
