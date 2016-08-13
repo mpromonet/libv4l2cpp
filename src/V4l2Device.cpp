@@ -222,7 +222,7 @@ int V4l2Device::configureParam(int fd)
 // ----------------------------------------- 
 //    create video capture interface
 // -----------------------------------------
-V4l2Capture* V4l2DeviceFactory::CreateVideoCapure(const V4L2DeviceParameters & param, IoType iotype)
+V4l2Capture* V4l2DeviceFactory::CreateVideoCapture(const V4L2DeviceParameters & param, IoType iotype)
 {
 	V4l2Capture* videoCapture = NULL;
 	switch (iotype)
