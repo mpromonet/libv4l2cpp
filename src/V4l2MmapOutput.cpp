@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <sys/ioctl.h>
 
 // libv4l2
 #include <linux/videodev2.h>
@@ -52,7 +53,7 @@ size_t V4l2MmapOutput::write(char* buffer, size_t bufferSize)
 		buf.type = m_deviceType;
 		buf.memory = V4L2_MEMORY_MMAP;
 
-		if (-1 == xioctl(m_fd, VIDIOC_DQBUF, &buf)) 
+		if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &buf)) 
 		{
 			perror("VIDIOC_DQBUF");
 			size = -1;
@@ -68,7 +69,7 @@ size_t V4l2MmapOutput::write(char* buffer, size_t bufferSize)
 			memcpy(m_buffer[buf.index].start, buffer, size);
 			buf.bytesused = size;
 
-			if (-1 == xioctl(m_fd, VIDIOC_QBUF, &buf))
+			if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf))
 			{
 				perror("VIDIOC_QBUF");
 				size = -1;

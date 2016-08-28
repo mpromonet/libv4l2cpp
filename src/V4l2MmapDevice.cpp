@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <errno.h> 
 #include <sys/mman.h>
+#include <sys/ioctl.h>
 
 // libv4l2
 #include <linux/videodev2.h>
@@ -36,7 +37,7 @@ bool V4l2MmapDevice::captureStart()
 	req.type                = m_deviceType;
 	req.memory              = V4L2_MEMORY_MMAP;
 
-	if (-1 == xioctl(m_fd, VIDIOC_REQBUFS, &req)) 
+	if (-1 == ioctl(m_fd, VIDIOC_REQBUFS, &req)) 
 	{
 		if (EINVAL == errno) 
 		{
@@ -63,7 +64,7 @@ bool V4l2MmapDevice::captureStart()
 			buf.memory      = V4L2_MEMORY_MMAP;
 			buf.index       = n_buffers;
 
-			if (-1 == xioctl(m_fd, VIDIOC_QUERYBUF, &buf))
+			if (-1 == ioctl(m_fd, VIDIOC_QUERYBUF, &buf))
 			{
 				perror("VIDIOC_QUERYBUF");
 				success = false;
@@ -96,7 +97,7 @@ bool V4l2MmapDevice::captureStart()
 			buf.memory      = V4L2_MEMORY_MMAP;
 			buf.index       = i;
 
-			if (-1 == xioctl(m_fd, VIDIOC_QBUF, &buf))
+			if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf))
 			{
 				perror("VIDIOC_QBUF");
 				success = false;
@@ -105,7 +106,7 @@ bool V4l2MmapDevice::captureStart()
 
 		// start stream
 		int type = m_deviceType;
-		if (-1 == xioctl(m_fd, VIDIOC_STREAMON, &type))
+		if (-1 == ioctl(m_fd, VIDIOC_STREAMON, &type))
 		{
 			perror("VIDIOC_STREAMON");
 			success = false;
@@ -119,7 +120,7 @@ bool V4l2MmapDevice::captureStop()
 	bool success = true;
 	
 	int type = m_deviceType;
-	if (-1 == xioctl(m_fd, VIDIOC_STREAMOFF, &type))
+	if (-1 == ioctl(m_fd, VIDIOC_STREAMOFF, &type))
 	{
 		perror("VIDIOC_STREAMOFF");      
 		success = false;
@@ -140,7 +141,7 @@ bool V4l2MmapDevice::captureStop()
 	req.count               = 0;
 	req.type                = m_deviceType;
 	req.memory              = V4L2_MEMORY_MMAP;
-	if (-1 == xioctl(m_fd, VIDIOC_REQBUFS, &req)) 
+	if (-1 == ioctl(m_fd, VIDIOC_REQBUFS, &req)) 
 	{
 		perror("VIDIOC_REQBUFS");
 		success = false;

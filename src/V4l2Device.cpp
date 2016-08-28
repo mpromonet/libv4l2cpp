@@ -42,26 +42,13 @@ void V4l2Device::close()
 	m_fd = -1;
 }
 
-// ioctl encapsulation
-int V4l2Device::xioctl(int fd, int request, void *arg)
-{
-	int ret = -1;
-	errno=0;
-	do 
-	{
-		ret = ioctl(fd, request, arg);
-	} while ((ret == -1) && ((errno == EINTR) || (errno == EAGAIN)));
-
-	return ret;
-}
-
 // query current format
 void V4l2Device::queryFormat()
 {
 	struct v4l2_format     fmt;
 	memset(&fmt,0,sizeof(fmt));
 	fmt.type  = m_deviceType;
-	if (0 == ioctl(m_fd,VIDIOC_G_FMT,&fmt)) // don't understand why xioctl give a different result
+	if (0 == ioctl(m_fd,VIDIOC_G_FMT,&fmt)) 
 	{
 		m_format     = fmt.fmt.pix.pixelformat;
 		m_width      = fmt.fmt.pix.width;
@@ -123,7 +110,7 @@ int V4l2Device::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 {
 	struct v4l2_capability cap;
 	memset(&(cap), 0, sizeof(cap));
-	if (-1 == xioctl(fd, VIDIOC_QUERYCAP, &cap)) 
+	if (-1 == ioctl(fd, VIDIOC_QUERYCAP, &cap)) 
 	{
 		LOG(ERROR) << "Cannot get capabilities for device:" << m_params.m_devName << " " << strerror(errno);
 		return -1;
@@ -152,7 +139,7 @@ int V4l2Device::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 
 std::string fourcc(unsigned int format)
 {
-	char formatArray[] = { (format&0xff), ((format>>8)&0xff), ((format>>16)&0xff), ((format>>24)&0xff), 0 };
+	char formatArray[] = { (char)(format&0xff), (char)((format>>8)&0xff), (char)((format>>16)&0xff), (char)((format>>24)&0xff), 0 };
 	return std::string(formatArray, strlen(formatArray));
 }
 
@@ -176,7 +163,7 @@ int V4l2Device::configureFormat(int fd)
 	fmt.fmt.pix.pixelformat = m_params.m_format;
 	fmt.fmt.pix.field       = V4L2_FIELD_ANY;
 	
-	if (xioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
+	if (ioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
 	{
 		LOG(ERROR) << "Cannot set format for device:" << m_params.m_devName << " " << strerror(errno);
 		return -1;
@@ -212,7 +199,7 @@ int V4l2Device::configureParam(int fd)
 		param.parm.capture.timeperframe.numerator = 1;
 		param.parm.capture.timeperframe.denominator = m_params.m_fps;
 
-		if (xioctl(fd, VIDIOC_S_PARM, &param) == -1)
+		if (ioctl(fd, VIDIOC_S_PARM, &param) == -1)
 		{
 			LOG(WARN) << "Cannot set param for device:" << m_params.m_devName << " " << strerror(errno);
 		}
@@ -222,6 +209,22 @@ int V4l2Device::configureParam(int fd)
 	}
 	
 	return 0;
+}
+
+int V4l2Device::isReadable(timeval* tv)
+{
+	fd_set fdset;
+	FD_ZERO(&fdset);	
+	FD_SET(m_fd, &fdset);
+	return select(m_fd+1, &fdset, NULL, NULL, tv);
+}
+
+int V4l2Device::isWritable(timeval* tv)
+{
+	fd_set fdset;
+	FD_ZERO(&fdset);	
+	FD_SET(m_fd, &fdset);
+	return select(m_fd+1, NULL, &fdset, NULL, tv);
 }
 
 

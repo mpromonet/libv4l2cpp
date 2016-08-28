@@ -40,14 +40,13 @@ class V4l2Device
 	protected:
 		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);
 	
-		int xioctl(int fd, int request, void *arg); 	
 		bool init(unsigned int mandatoryCapabilities);
 		void close();	
 	
 		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);
 		int checkCapabilities(int fd, unsigned int mandatoryCapabilities);
 		int configureFormat(int fd);
-		int configureParam(int fd);		
+		int configureParam(int fd);	
 	
 	public:
 		virtual ~V4l2Device();
@@ -57,6 +56,8 @@ class V4l2Device
 		int getHeight() { return m_height; };
 		void queryFormat();	
 		int getFd() { return m_fd; };		
+		int isReadable(timeval* tv);
+		int isWritable(timeval* tv);
 
 	protected:
 		V4L2DeviceParameters m_params;
