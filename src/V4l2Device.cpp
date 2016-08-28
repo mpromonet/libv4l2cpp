@@ -55,6 +55,33 @@ int V4l2Device::xioctl(int fd, int request, void *arg)
 	return ret;
 }
 
+// ioctl encapsulation
+int V4l2Device::xioctlSelect(int fd, int request, void *arg)
+{
+	int ret = -1;
+	errno=0;
+	do
+	{
+		fd_set fds;
+		struct timeval tv;
+		FD_ZERO(&fds);
+		FD_SET(fd, &fds);
+		tv.tv_sec = 0;
+		tv.tv_usec = 10000;
+		int r = select(fd + 1, &fds, NULL, NULL, &tv);
+		if(-1 == r) {
+			if (EINTR == errno)
+				continue;
+			return -1;
+		}
+		if(-1 == r)
+			return -1;
+		ret = ioctl(fd, request, arg);
+	} while ((ret == -1) && ((errno == EINTR) || (errno == EAGAIN)));
+
+	return ret;
+}
+
 // query current format
 void V4l2Device::queryFormat()
 {

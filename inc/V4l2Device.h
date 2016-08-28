@@ -41,6 +41,7 @@ class V4l2Device
 		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);
 	
 		int xioctl(int fd, int request, void *arg); 	
+		int xioctlSelect(int fd, int request, void *arg);
 		bool init(unsigned int mandatoryCapabilities);
 		void close();	
 	
