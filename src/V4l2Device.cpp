@@ -116,13 +116,7 @@ int V4l2Device::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 		return -1;
 	}
 	LOG(NOTICE) << "driver:" << cap.driver << " " << std::hex << cap.capabilities;
-	
-	if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) 
-	{
-		LOG(ERROR) << "No capture support for device:" << m_params.m_devName << " " << strerror(errno);
-		return -1;
-	}
-	
+		
 	if ((cap.capabilities & V4L2_CAP_READWRITE))    LOG(NOTICE) << m_params.m_devName << " support read/write";
 	if ((cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)) LOG(NOTICE) << m_params.m_devName << " support output";
 	if ((cap.capabilities & V4L2_CAP_STREAMING))    LOG(NOTICE) << m_params.m_devName << " support streaming";
@@ -191,7 +185,7 @@ int V4l2Device::configureFormat(int fd)
 // configure capture FPS 
 int V4l2Device::configureParam(int fd)
 {
-	if (m_params.m_fps==0) 
+	if (m_params.m_fps!=0)
 	{
 		struct v4l2_streamparm   param;			
 		memset(&(param), 0, sizeof(param));
@@ -231,7 +225,7 @@ int V4l2Device::isWritable(timeval* tv)
 // ----------------------------------------- 
 //    create video capture interface
 // -----------------------------------------
-V4l2Capture* V4l2DeviceFactory::CreateVideoCapure(const V4L2DeviceParameters & param, IoType iotype)
+V4l2Capture* V4l2DeviceFactory::CreateVideoCapture(const V4L2DeviceParameters & param, IoType iotype)
 {
 	V4l2Capture* videoCapture = NULL;
 	switch (iotype)

@@ -83,7 +83,7 @@ class V4l2DeviceFactory
 			IOTYPE_READ,
 			IOTYPE_MMAP,
 		};
-		static V4l2Capture* CreateVideoCapure(const V4L2DeviceParameters & param, IoType iotype);
+		static V4l2Capture* CreateVideoCapture(const V4L2DeviceParameters & param, IoType iotype);
 		static V4l2Output*  CreateVideoOutput(const V4L2DeviceParameters & param, IoType iotype);
 };
 
