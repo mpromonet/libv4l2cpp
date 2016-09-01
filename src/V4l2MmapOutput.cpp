@@ -31,10 +31,6 @@ V4l2MmapOutput* V4l2MmapOutput::createNew(V4L2DeviceParameters params)
 		delete device;
 		device=NULL; 
 	}
-	if (device)
-	{
-		device->captureStart();
-	}
 	return device;
 }
 

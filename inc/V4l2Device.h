@@ -40,7 +40,7 @@ class V4l2Device
 	protected:
 		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);
 	
-		bool init(unsigned int mandatoryCapabilities);
+		virtual bool init(unsigned int mandatoryCapabilities);
 		void close();	
 	
 		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);

@@ -27,6 +27,21 @@ V4l2MmapDevice::V4l2MmapDevice(V4L2DeviceParameters params, v4l2_buf_type device
 	memset(&m_buffer, 0, sizeof(m_buffer));
 }
 
+bool V4l2MmapDevice::init(unsigned int mandatoryCapabilities)
+{
+	bool ret = V4l2Device::init(mandatoryCapabilities);
+	if (ret)
+	{
+		this->captureStart();
+	}
+	return ret;
+}
+
+V4l2MmapDevice::~V4l2MmapDevice()
+{
+	this->captureStop();
+}
+
 
 bool V4l2MmapDevice::captureStart() 
 {
