@@ -13,10 +13,6 @@
 #ifndef V4L2_CAPTURE
 #define V4L2_CAPTURE
 
-#include <string>
-#include <list> 
-#include <iostream>
-
 #include "V4l2Device.h"
 
 // ---------------------------------
@@ -26,10 +22,7 @@ class V4l2Capture : public virtual V4l2Device
 {		
 	protected:
 		V4l2Capture(const V4L2DeviceParameters&  params);
-	
-	public:
-		virtual ~V4l2Capture();	
-				
+					
 	public:
 		virtual size_t read(char* buffer, size_t bufferSize) = 0;
 		virtual bool isReady() = 0;

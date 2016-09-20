@@ -3,28 +3,31 @@
 ** support, and with no warranty, express or implied, as to its usefulness for
 ** any purpose.
 **
-** V4l2Output.h
+** V4l2WriteOutput.h
 ** 
 ** V4L2 Output wrapper 
 **
 ** -------------------------------------------------------------------------*/
 
 
-#ifndef V4L2_OUTPUT
-#define V4L2_OUTPUT
+#ifndef V4L2_WRITE_OUTPUT
+#define V4L2_WRITE_OUTPUT
 
-#include "V4l2Device.h"
+#include "V4l2Output.h"
 
 // ---------------------------------
 // V4L2 Output
 // ---------------------------------
-class V4l2Output : public virtual V4l2Device
+class V4l2WriteOutput : public virtual V4l2Output
 {		
+	public:
+		static V4l2WriteOutput* createNew(const V4L2DeviceParameters& params) ;
+
 	protected:
-		V4l2Output(const V4L2DeviceParameters&  params);
+		V4l2WriteOutput(const V4L2DeviceParameters&  params);
 	
 	public:
-		virtual size_t write(char* buffer, size_t bufferSize) = 0;
+		virtual size_t write(char* buffer, size_t bufferSize);
 		
 };
 

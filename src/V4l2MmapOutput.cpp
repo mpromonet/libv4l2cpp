@@ -12,7 +12,6 @@
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sys/mman.h>
 #include <sys/ioctl.h>
 
 // libv4l2
@@ -22,7 +21,7 @@
 #include "logger.h"
 #include "V4l2MmapOutput.h"
 
-V4l2MmapOutput* V4l2MmapOutput::createNew(V4L2DeviceParameters params) 
+V4l2MmapOutput* V4l2MmapOutput::createNew(const V4L2DeviceParameters & params) 
 { 
 	V4l2MmapOutput* device = new V4l2MmapOutput(params); 
 		
@@ -34,7 +33,7 @@ V4l2MmapOutput* V4l2MmapOutput::createNew(V4L2DeviceParameters params)
 	return device;
 }
 
-V4l2MmapOutput::V4l2MmapOutput(V4L2DeviceParameters params) : V4l2Device(params, V4L2_BUF_TYPE_VIDEO_OUTPUT), V4l2MmapDevice(params, V4L2_BUF_TYPE_VIDEO_OUTPUT), V4l2Output(params) 
+V4l2MmapOutput::V4l2MmapOutput(const V4L2DeviceParameters & params) : V4l2Device(params, V4L2_BUF_TYPE_VIDEO_OUTPUT), V4l2MmapDevice(params, V4L2_BUF_TYPE_VIDEO_OUTPUT), V4l2Output(params) 
 {
 }
 

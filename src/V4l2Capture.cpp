@@ -28,10 +28,6 @@ V4l2Capture::V4l2Capture(const V4L2DeviceParameters& params) : V4l2Device(params
 {
 }
 
-// Destructor
-V4l2Capture::~V4l2Capture()
-{
-}
 
 
 				

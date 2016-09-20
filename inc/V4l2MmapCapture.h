@@ -20,10 +20,10 @@
 class V4l2MmapCapture : public V4l2MmapDevice, public V4l2Capture
 {
 	public:
-		static V4l2MmapCapture* createNew(V4L2DeviceParameters params);
+		static V4l2MmapCapture* createNew(const V4L2DeviceParameters & params);
 	
 	protected:
-		V4l2MmapCapture(V4L2DeviceParameters params);
+		V4l2MmapCapture(const V4L2DeviceParameters & params);
 			
 	public:
 		virtual size_t read(char* buffer, size_t bufferSize);

@@ -16,10 +16,11 @@
 #include "V4l2Device.h"
 
 #define V4L2MMAP_NBBUFFER 10
+
 class V4l2MmapDevice : public virtual V4l2Device
 {	
 	protected:
-		V4l2MmapDevice(V4L2DeviceParameters params, v4l2_buf_type deviceType);
+		V4l2MmapDevice(const V4L2DeviceParameters & params, v4l2_buf_type deviceType);
 			
 	public:
 		virtual ~V4l2MmapDevice();

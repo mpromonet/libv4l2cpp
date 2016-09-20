@@ -19,10 +19,10 @@
 class V4l2ReadCapture : public V4l2Capture
 {
 	public:
-		static V4l2ReadCapture* createNew(V4L2DeviceParameters params);
+		static V4l2ReadCapture* createNew(const V4L2DeviceParameters & params);
 	
 	protected:
-		V4l2ReadCapture(V4L2DeviceParameters params) : V4l2Device(params,V4L2_BUF_TYPE_VIDEO_CAPTURE), V4l2Capture(params), m_counter(0) {};
+		V4l2ReadCapture(const V4L2DeviceParameters & params);
 			
 	public:
 		virtual size_t read(char* buffer, size_t bufferSize);

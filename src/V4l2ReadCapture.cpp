@@ -19,7 +19,7 @@
 #include "V4l2ReadCapture.h"
 
 // Creator
-V4l2ReadCapture* V4l2ReadCapture::createNew(V4L2DeviceParameters params) 
+V4l2ReadCapture* V4l2ReadCapture::createNew(const V4L2DeviceParameters & params) 
 { 
 	V4l2ReadCapture* device = new V4l2ReadCapture(params); 
 	if (device && !device->init(V4L2_CAP_VIDEO_CAPTURE|V4L2_CAP_READWRITE))
@@ -28,6 +28,10 @@ V4l2ReadCapture* V4l2ReadCapture::createNew(V4L2DeviceParameters params)
 		device=NULL;
 	}
 	return device;
+}
+
+V4l2ReadCapture::V4l2ReadCapture(const V4L2DeviceParameters & params) : V4l2Device(params,V4L2_BUF_TYPE_VIDEO_CAPTURE), V4l2Capture(params), m_counter(0) 
+{
 }
 
 size_t V4l2ReadCapture::read(char* buffer, size_t bufferSize)

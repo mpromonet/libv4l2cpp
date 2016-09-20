@@ -236,7 +236,7 @@ V4l2Capture* V4l2DeviceFactory::CreateVideoCapture(const V4L2DeviceParameters & 
 	return videoCapture;
 }
 
-#include "V4l2Output.h"
+#include "V4l2WriteOutput.h"
 #include "V4l2MmapOutput.h"
 // -----------------------------------------
 //    create video output interface
@@ -246,8 +246,8 @@ V4l2Output* V4l2DeviceFactory::CreateVideoOutput(const V4L2DeviceParameters & pa
 	V4l2Output* videoOutput = NULL;
 	switch (iotype)
 	{
-		case IOTYPE_MMAP: videoOutput = V4l2MmapOutput::createNew(param); break;
-		default:          videoOutput = V4l2Output::createNew(param);     break;
+		case IOTYPE_MMAP: videoOutput = V4l2MmapOutput::createNew(param) ; break;
+		default:          videoOutput = V4l2WriteOutput::createNew(param); break;
 	}	
 	return videoOutput;	
 }
