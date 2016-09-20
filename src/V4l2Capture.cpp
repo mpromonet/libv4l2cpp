@@ -9,12 +9,6 @@
 **
 ** -------------------------------------------------------------------------*/
 
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <iomanip>
-#include <sstream>
-#include <sys/ioctl.h>
 
 // libv4l2
 #include <linux/videodev2.h>

@@ -18,9 +18,6 @@
 #include "logger.h"
 
 #include "V4l2Device.h"
-#include "V4l2MmapCapture.h"
-#include "V4l2ReadCapture.h"
-
 
 // -----------------------------------------
 //    V4L2Device
@@ -222,7 +219,10 @@ int V4l2Device::isWritable(timeval* tv)
 }
 
 
-// ----------------------------------------- 
+#include "V4l2MmapCapture.h"
+#include "V4l2ReadCapture.h"
+
+// -----------------------------------------
 //    create video capture interface
 // -----------------------------------------
 V4l2Capture* V4l2DeviceFactory::CreateVideoCapture(const V4L2DeviceParameters & param, IoType iotype)
@@ -238,6 +238,7 @@ V4l2Capture* V4l2DeviceFactory::CreateVideoCapture(const V4L2DeviceParameters & 
 
 #include "V4l2WriteOutput.h"
 #include "V4l2MmapOutput.h"
+
 // -----------------------------------------
 //    create video output interface
 // -----------------------------------------

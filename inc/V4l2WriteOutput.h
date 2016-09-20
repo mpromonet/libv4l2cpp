@@ -18,7 +18,7 @@
 // ---------------------------------
 // V4L2 Output
 // ---------------------------------
-class V4l2WriteOutput : public virtual V4l2Output
+class V4l2WriteOutput : public V4l2Output
 {		
 	public:
 		static V4l2WriteOutput* createNew(const V4L2DeviceParameters& params) ;
