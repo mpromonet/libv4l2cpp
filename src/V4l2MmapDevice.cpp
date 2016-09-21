@@ -32,18 +32,18 @@ bool V4l2MmapDevice::init(unsigned int mandatoryCapabilities)
 	bool ret = V4l2Device::init(mandatoryCapabilities);
 	if (ret)
 	{
-		this->captureStart();
+		this->start();
 	}
 	return ret;
 }
 
 V4l2MmapDevice::~V4l2MmapDevice()
 {
-	this->captureStop();
+	this->stop();
 }
 
 
-bool V4l2MmapDevice::captureStart() 
+bool V4l2MmapDevice::start() 
 {
 	bool success = true;
 	struct v4l2_requestbuffers req;
@@ -130,7 +130,7 @@ bool V4l2MmapDevice::captureStart()
 	return success; 
 }
 
-bool V4l2MmapDevice::captureStop() 
+bool V4l2MmapDevice::stop() 
 {
 	bool success = true;
 	

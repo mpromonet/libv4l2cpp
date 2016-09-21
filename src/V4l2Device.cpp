@@ -202,22 +202,6 @@ int V4l2Device::configureParam(int fd)
 	return 0;
 }
 
-int V4l2Device::isReadable(timeval* tv)
-{
-	fd_set fdset;
-	FD_ZERO(&fdset);	
-	FD_SET(m_fd, &fdset);
-	return select(m_fd+1, &fdset, NULL, NULL, tv);
-}
-
-int V4l2Device::isWritable(timeval* tv)
-{
-	fd_set fdset;
-	FD_ZERO(&fdset);	
-	FD_SET(m_fd, &fdset);
-	return select(m_fd+1, NULL, &fdset, NULL, tv);
-}
-
 
 #include "V4l2MmapCapture.h"
 #include "V4l2ReadCapture.h"

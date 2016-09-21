@@ -23,3 +23,10 @@ V4l2Output::V4l2Output(const V4L2DeviceParameters& params) : V4l2Device(params, 
 {
 }
 
+int V4l2Output::isWritable(timeval* tv)
+{
+	fd_set fdset;
+	FD_ZERO(&fdset);	
+	FD_SET(m_fd, &fdset);
+	return select(m_fd+1, NULL, &fdset, NULL, tv);
+}

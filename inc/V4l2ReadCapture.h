@@ -26,10 +26,6 @@ class V4l2ReadCapture : public V4l2Capture
 			
 	public:
 		virtual size_t read(char* buffer, size_t bufferSize);
-		virtual bool isReady() { return (m_fd != -1); };
-	
-	protected:
-		int m_counter;
 };
 
 #endif

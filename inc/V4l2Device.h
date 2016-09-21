@@ -40,7 +40,7 @@ class V4l2Device
 	protected:
 		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);
 	
-		virtual bool init(unsigned int mandatoryCapabilities);
+		virtual bool init(unsigned int mandatoryCapabilities);		
 		void close();	
 	
 		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);
@@ -56,8 +56,9 @@ class V4l2Device
 		int getHeight() { return m_height; };
 		void queryFormat();	
 		int getFd() { return m_fd; };		
-		int isReadable(timeval* tv);
-		int isWritable(timeval* tv);
+		virtual bool isReady() { return (m_fd != -1); };
+		virtual bool start()   { return true; }
+		virtual bool stop()    { return true; }
 
 	protected:
 		V4L2DeviceParameters m_params;
@@ -80,7 +81,7 @@ class V4l2DeviceFactory
 	public:
 		enum IoType
 		{
-			IOTYPE_READ,
+			IOTYPE_READWRITE,
 			IOTYPE_MMAP,
 		};
 		static V4l2Capture* CreateVideoCapture(const V4L2DeviceParameters & param, IoType iotype);

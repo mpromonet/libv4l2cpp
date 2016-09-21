@@ -27,7 +27,6 @@ class V4l2MmapCapture : public V4l2MmapDevice, public V4l2Capture
 			
 	public:
 		virtual size_t read(char* buffer, size_t bufferSize);
-		virtual bool isReady() { return  ((m_fd != -1)&& (n_buffers != 0)); };		
 };
 
 #endif

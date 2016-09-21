@@ -25,8 +25,7 @@ class V4l2Capture : public virtual V4l2Device
 					
 	public:
 		virtual size_t read(char* buffer, size_t bufferSize) = 0;
-		virtual bool isReady() = 0;
-		
+		int            isReadable(timeval* tv);	
 };
 
 

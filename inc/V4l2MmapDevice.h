@@ -25,11 +25,10 @@ class V4l2MmapDevice : public virtual V4l2Device
 	public:
 		virtual ~V4l2MmapDevice();
 
-		bool captureStart();
-		bool captureStop();
-
 		virtual bool init(unsigned int mandatoryiCapabilities);
 		virtual bool isReady() { return  ((m_fd != -1)&& (n_buffers != 0)); };
+		virtual bool start();
+		virtual bool stop();
 	
 	protected:
 		unsigned int  n_buffers;

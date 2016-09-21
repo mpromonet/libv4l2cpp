@@ -25,7 +25,7 @@ class V4l2Output : public virtual V4l2Device
 	
 	public:
 		virtual size_t write(char* buffer, size_t bufferSize) = 0;
-		
+		int            isWritable(timeval* tv);
 };
 
 #endif

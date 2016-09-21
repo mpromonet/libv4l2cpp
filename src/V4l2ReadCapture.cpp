@@ -30,7 +30,7 @@ V4l2ReadCapture* V4l2ReadCapture::createNew(const V4L2DeviceParameters & params)
 	return device;
 }
 
-V4l2ReadCapture::V4l2ReadCapture(const V4L2DeviceParameters & params) : V4l2Device(params, m_deviceType), V4l2Capture(params), m_counter(0) 
+V4l2ReadCapture::V4l2ReadCapture(const V4L2DeviceParameters & params) : V4l2Device(params, m_deviceType), V4l2Capture(params)
 {
 }
 
