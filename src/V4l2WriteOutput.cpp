@@ -30,7 +30,7 @@ V4l2WriteOutput* V4l2WriteOutput::createNew(const V4L2DeviceParameters& params)
 }
 
 // Constructor
-V4l2WriteOutput::V4l2WriteOutput(const V4L2DeviceParameters& params) : V4l2Device(params,m_deviceType), V4l2Output(params)
+V4l2WriteOutput::V4l2WriteOutput(const V4L2DeviceParameters& params) : V4l2Device(params,V4L2_BUF_TYPE_VIDEO_OUTPUT), V4l2Output(params)
 {
 }
 

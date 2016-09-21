@@ -33,7 +33,7 @@ V4l2MmapCapture* V4l2MmapCapture::createNew(const V4L2DeviceParameters & params)
 	return device;
 }
 
-V4l2MmapCapture::V4l2MmapCapture(const V4L2DeviceParameters & params) : V4l2Device(params, m_deviceType), V4l2MmapDevice(params, m_deviceType), V4l2Capture(params)
+V4l2MmapCapture::V4l2MmapCapture(const V4L2DeviceParameters & params) : V4l2Device(params, V4L2_BUF_TYPE_VIDEO_CAPTURE), V4l2MmapDevice(params, V4L2_BUF_TYPE_VIDEO_CAPTURE), V4l2Capture(params)
 {
 }
 
