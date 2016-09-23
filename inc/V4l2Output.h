@@ -18,14 +18,16 @@
 // ---------------------------------
 // V4L2 Output
 // ---------------------------------
-class V4l2Output : public virtual V4l2Device
+class V4l2Output : public V4l2Access
 {		
 	protected:
-		V4l2Output(const V4L2DeviceParameters&  params);
-	
+		V4l2Output(V4l2Device* device);
+
 	public:
-		virtual size_t write(char* buffer, size_t bufferSize) = 0;
-		int            isWritable(timeval* tv);
+		static V4l2Output* create(const V4L2DeviceParameters & param, V4l2DeviceFactory::IoType iotype);
+	
+		size_t write(char* buffer, size_t bufferSize);
+		int    isWritable(timeval* tv);
 };
 
 #endif

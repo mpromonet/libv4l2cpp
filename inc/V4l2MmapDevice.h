@@ -17,12 +17,14 @@
 
 #define V4L2MMAP_NBBUFFER 10
 
-class V4l2MmapDevice : public virtual V4l2Device
+class V4l2MmapDevice : public V4l2Device
 {	
-	protected:
-		V4l2MmapDevice(const V4L2DeviceParameters & params, v4l2_buf_type deviceType);
+	protected:	
+		size_t writeInternal(char* buffer, size_t bufferSize);
+		size_t readInternal(char* buffer, size_t bufferSize);
 			
 	public:
+		V4l2MmapDevice(const V4L2DeviceParameters & params, v4l2_buf_type deviceType);		
 		virtual ~V4l2MmapDevice();
 
 		virtual bool init(unsigned int mandatoryiCapabilities);

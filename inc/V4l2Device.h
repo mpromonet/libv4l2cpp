@@ -37,28 +37,35 @@ struct V4L2DeviceParameters
 // ---------------------------------
 class V4l2Device
 {		
-	protected:
-		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);
+	friend class V4l2Capture;
+	friend class V4l2Output;
 	
-		virtual bool init(unsigned int mandatoryCapabilities);		
+	protected:	
 		void close();	
 	
 		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);
 		int checkCapabilities(int fd, unsigned int mandatoryCapabilities);
 		int configureFormat(int fd);
-		int configureParam(int fd);	
+		int configureParam(int fd);
+
+		virtual bool init(unsigned int mandatoryCapabilities);		
+		virtual size_t writeInternal(char*, size_t) { return -1; };
+		virtual size_t readInternal(char*, size_t)  { return -1; };		
 	
 	public:
+		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);		
 		virtual ~V4l2Device();
-		int getBufferSize() { return m_bufferSize; };
-		int getFormat() { return m_format; } ;
-		int getWidth() { return m_width; };
-		int getHeight() { return m_height; };
-		void queryFormat();	
-		int getFd() { return m_fd; };		
-		virtual bool isReady() { return (m_fd != -1); };
+	
+		virtual bool isReady() { return (m_fd != -1); }
 		virtual bool start()   { return true; }
 		virtual bool stop()    { return true; }
+	
+		int getBufferSize() { return m_bufferSize; }
+		int getFormat()     { return m_format;     }
+		int getWidth()      { return m_width;      }
+		int getHeight()     { return m_height;     }
+		int getFd()         { return m_fd;         }
+		void queryFormat();	
 
 	protected:
 		V4L2DeviceParameters m_params;
@@ -69,6 +76,31 @@ class V4l2Device
 		int m_format;
 		int m_width;
 		int m_height;	
+};
+
+class V4l2Access
+{
+	public:
+		V4l2Access(V4l2Device* device) : m_device(device) {}
+		virtual ~V4l2Access() { delete m_device; }
+		
+		int getFd()         { return m_device->getFd();         }
+		int getBufferSize() { return m_device->getBufferSize(); }
+		int getFormat()     { return m_device->getFormat();     }
+		int getWidth()      { return m_device->getWidth();      }
+		int getHeight()     { return m_device->getHeight();     }
+		void queryFormat()  { m_device->queryFormat();          }
+
+		int isReady()       { return m_device->isReady();       }
+		int start()         { return m_device->start();         }
+		int stop()          { return m_device->stop();          }
+
+	private:
+		V4l2Access(const V4l2Access&);
+		V4l2Access & operator=(const V4l2Access&);
+	
+	protected:
+		V4l2Device* m_device;		
 };
 
 // ---------------------------------

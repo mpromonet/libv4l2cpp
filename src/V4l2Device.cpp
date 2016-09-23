@@ -203,36 +203,3 @@ int V4l2Device::configureParam(int fd)
 }
 
 
-#include "V4l2MmapCapture.h"
-#include "V4l2ReadCapture.h"
-
-// -----------------------------------------
-//    create video capture interface
-// -----------------------------------------
-V4l2Capture* V4l2DeviceFactory::CreateVideoCapture(const V4L2DeviceParameters & param, IoType iotype)
-{
-	V4l2Capture* videoCapture = NULL;
-	switch (iotype)
-	{
-		case IOTYPE_MMAP: videoCapture = V4l2MmapCapture::createNew(param); break;
-		default:          videoCapture = V4l2ReadCapture::createNew(param); break;
-	}
-	return videoCapture;
-}
-
-#include "V4l2WriteOutput.h"
-#include "V4l2MmapOutput.h"
-
-// -----------------------------------------
-//    create video output interface
-// -----------------------------------------
-V4l2Output* V4l2DeviceFactory::CreateVideoOutput(const V4L2DeviceParameters & param, IoType iotype)
-{
-	V4l2Output* videoOutput = NULL;
-	switch (iotype)
-	{
-		case IOTYPE_MMAP: videoOutput = V4l2MmapOutput::createNew(param) ; break;
-		default:          videoOutput = V4l2WriteOutput::createNew(param); break;
-	}	
-	return videoOutput;	
-}

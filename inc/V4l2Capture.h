@@ -18,14 +18,16 @@
 // ---------------------------------
 // V4L2 Capture
 // ---------------------------------
-class V4l2Capture : public virtual V4l2Device
+class V4l2Capture : public V4l2Access
 {		
-	protected:
-		V4l2Capture(const V4L2DeviceParameters&  params);
-					
+	protected:	
+		V4l2Capture(V4l2Device* device);
+	
 	public:
-		virtual size_t read(char* buffer, size_t bufferSize) = 0;
-		int            isReadable(timeval* tv);	
+		static V4l2Capture* create(const V4L2DeviceParameters & param, V4l2DeviceFactory::IoType iotype);
+	
+		size_t read(char* buffer, size_t bufferSize);
+		int    isReadable(timeval* tv);	
 };
 
 

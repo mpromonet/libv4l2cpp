@@ -166,3 +166,77 @@ bool V4l2MmapDevice::stop()
 	return success; 
 }
 
+size_t V4l2MmapDevice::readInternal(char* buffer, size_t bufferSize)
+{
+	size_t size = 0;
+	if (n_buffers > 0)
+	{
+		struct v4l2_buffer buf;	
+		memset (&buf, 0, sizeof(buf));
+		buf.type = m_deviceType;
+		buf.memory = V4L2_MEMORY_MMAP;
+
+		if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &buf)) 
+		{
+			perror("VIDIOC_DQBUF");
+			size = -1;
+		}
+		else if (buf.index < n_buffers)
+		{
+			size = buf.bytesused;
+			if (size > bufferSize)
+			{
+				size = bufferSize;
+				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << bufferSize << " needed:" << buf.bytesused;
+			}
+			memcpy(buffer, m_buffer[buf.index].start, size);
+
+			if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf))
+			{
+				perror("VIDIOC_QBUF");
+				size = -1;
+			}
+		}
+	}
+	return size;
+}
+
+size_t V4l2MmapDevice::writeInternal(char* buffer, size_t bufferSize)
+{
+	size_t size = 0;
+	if (n_buffers > 0)
+	{
+		struct v4l2_buffer buf;	
+		memset (&buf, 0, sizeof(buf));
+		buf.type = m_deviceType;
+		buf.memory = V4L2_MEMORY_MMAP;
+
+		if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &buf)) 
+		{
+			perror("VIDIOC_DQBUF");
+			size = -1;
+		}
+		else if (buf.index < n_buffers)
+		{
+			size = bufferSize;
+			if (size > buf.length)
+			{
+				size = buf.length;
+				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << buf.length << " needed:" << size;
+			}
+			memcpy(m_buffer[buf.index].start, buffer, size);
+			buf.bytesused = size;
+
+			if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf))
+			{
+				perror("VIDIOC_QBUF");
+				size = -1;
+			}
+		}
+	}
+	return size;
+}
+
+
+
+
