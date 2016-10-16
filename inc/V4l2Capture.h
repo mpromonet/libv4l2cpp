@@ -24,7 +24,7 @@ class V4l2Capture : public V4l2Access
 		V4l2Capture(V4l2Device* device);
 	
 	public:
-		static V4l2Capture* create(const V4L2DeviceParameters & param, V4l2DeviceFactory::IoType iotype);
+		static V4l2Capture* create(const V4L2DeviceParameters & param, IoType iotype = V4l2Access::IOTYPE_MMAP);
 	
 		size_t read(char* buffer, size_t bufferSize);
 		int    isReadable(timeval* tv);	

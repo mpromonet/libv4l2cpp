@@ -22,14 +22,14 @@
 // -----------------------------------------
 //    create video capture interface
 // -----------------------------------------
-V4l2Capture* V4l2Capture::create(const V4L2DeviceParameters & param, V4l2DeviceFactory::IoType iotype)
+V4l2Capture* V4l2Capture::create(const V4L2DeviceParameters & param, IoType iotype)
 {
 	V4l2Capture* videoCapture = NULL;
 	V4l2Device* videoDevice = NULL; 
 	int caps = V4L2_CAP_VIDEO_CAPTURE;
 	switch (iotype)
 	{
-		case V4l2DeviceFactory::IOTYPE_MMAP: 
+		case IOTYPE_MMAP: 
 			videoDevice = new V4l2MmapDevice(param, V4L2_BUF_TYPE_VIDEO_CAPTURE); 
 			caps |= V4L2_CAP_STREAMING;
 		break;

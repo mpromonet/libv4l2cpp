@@ -81,6 +81,12 @@ class V4l2Device
 class V4l2Access
 {
 	public:
+		enum IoType
+		{
+			IOTYPE_READWRITE,
+			IOTYPE_MMAP,
+		};
+		
 		V4l2Access(V4l2Device* device) : m_device(device) {}
 		virtual ~V4l2Access() { delete m_device; }
 		
@@ -103,21 +109,5 @@ class V4l2Access
 		V4l2Device* m_device;		
 };
 
-// ---------------------------------
-// V4L2 Device factory
-// ---------------------------------
-class V4l2Capture;
-class V4l2Output;
-class V4l2DeviceFactory
-{
-	public:
-		enum IoType
-		{
-			IOTYPE_READWRITE,
-			IOTYPE_MMAP,
-		};
-		static V4l2Capture* CreateVideoCapture(const V4L2DeviceParameters & param, IoType iotype);
-		static V4l2Output*  CreateVideoOutput(const V4L2DeviceParameters & param, IoType iotype);
-};
 
 #endif
