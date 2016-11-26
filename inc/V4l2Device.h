@@ -16,6 +16,13 @@
 #include <string>
 #include <linux/videodev2.h>
 
+#ifdef V4L2_PIX_FMT_VP8
+#define V4L2_PIX_FMT_VP8  v4l2_fourcc('V', 'P', '8', '0')
+#endif
+#ifdef V4L2_PIX_FMT_VP9
+#define V4L2_PIX_FMT_VP9  v4l2_fourcc('V', 'P', '9', '0')
+#endif
+
 // ---------------------------------
 // V4L2 Device parameters
 // ---------------------------------
