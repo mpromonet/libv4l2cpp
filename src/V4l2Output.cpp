@@ -19,6 +19,7 @@
 
 #include "V4l2Output.h"
 #include "V4l2MmapDevice.h"
+#include "V4l2ReadWriteDevice.h"
 
 // -----------------------------------------
 //    create video output interface
@@ -35,7 +36,7 @@ V4l2Output* V4l2Output::create(const V4L2DeviceParameters & param, IoType iotype
 			caps |= V4L2_CAP_STREAMING;
 		break;
 		default:          
-			videoDevice = new V4l2Device(param, V4L2_BUF_TYPE_VIDEO_OUTPUT); 
+			videoDevice = new V4l2ReadWriteDevice(param, V4L2_BUF_TYPE_VIDEO_OUTPUT); 
 			caps |= V4L2_CAP_READWRITE;
 		break;
 	}
