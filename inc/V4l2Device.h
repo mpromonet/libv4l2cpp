@@ -22,6 +22,9 @@
 #ifndef V4L2_PIX_FMT_VP9
 #define V4L2_PIX_FMT_VP9  v4l2_fourcc('V', 'P', '9', '0')
 #endif
+#ifndef V4L2_PIX_FMT_HEVC
+#define V4L2_PIX_FMT_HEVC  v4l2_fourcc('H', 'E', 'V', 'C')
+#endif
 
 // ---------------------------------
 // V4L2 Device parameters
