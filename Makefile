@@ -6,7 +6,7 @@ AR = $(CROSS)ar
 PREFIX?=/usr
 
 ifneq ($(wildcard $(SYSROOT)$(PREFIX)/include/log4cpp/Category.hh),)
-#CFLAGS += -DHAVE_LOG4CPP -I $(SYSROOT)$(PREFIX)/include
+CFLAGS += -DHAVE_LOG4CPP -I $(SYSROOT)$(PREFIX)/include
 endif
 
 V4L2WRAPPER_CPP:=$(wildcard src/*.cpp)
