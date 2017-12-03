@@ -1,8 +1,13 @@
 CFLAGS = -W -Wall -pthread -g -pipe $(CFLAGS_EXTRA)
 CFLAGS += -I inc
 RM = rm -rf
-CC = gcc
-AR = ar
+CC = $(CROSS)gcc
+AR = $(CROSS)ar
+PREFIX?=/usr
+
+ifneq ($(wildcard $(SYSROOT)$(PREFIX)/include/log4cpp/Category.hh),)
+#CFLAGS += -DHAVE_LOG4CPP -I $(SYSROOT)$(PREFIX)/include
+endif
 
 V4L2WRAPPER_CPP:=$(wildcard src/*.cpp)
 V4L2WRAPPER_OBJ:=$(V4L2WRAPPER_CPP:%.cpp=%.o)

@@ -11,6 +11,7 @@
 
 #include <string.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <errno.h> 
 #include <sys/mman.h>
 #include <sys/ioctl.h>

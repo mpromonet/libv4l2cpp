@@ -9,8 +9,10 @@
 
 #include <unistd.h>
 #include <errno.h>
-#include <sys/ioctl.h>
 #include <string.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 // libv4l2
 #include <linux/videodev2.h>
@@ -112,7 +114,7 @@ int V4l2Device::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 		LOG(ERROR) << "Cannot get capabilities for device:" << m_params.m_devName << " " << strerror(errno);
 		return -1;
 	}
-	LOG(NOTICE) << "driver:" << cap.driver << " " << std::hex << cap.capabilities;
+	LOG(NOTICE) << "driver:" << cap.driver << " " << std::hex << cap.capabilities << std::dec;
 		
 	if ((cap.capabilities & V4L2_CAP_READWRITE))    LOG(NOTICE) << m_params.m_devName << " support read/write";
 	if ((cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)) LOG(NOTICE) << m_params.m_devName << " support output";
