@@ -151,6 +151,7 @@ int V4l2Device::configureFormat(int fd)
 		m_params.m_height = m_height;
 		
 		LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_params.m_width << "x" << m_params.m_height;
+		return 0;
 	}		
 		
 	for (unsigned int format : m_params.m_formatList) {
