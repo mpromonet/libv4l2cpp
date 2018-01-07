@@ -33,7 +33,14 @@
 struct V4L2DeviceParameters 
 {
 	V4L2DeviceParameters(const char* devname, const std::list<unsigned int> & formatList, unsigned int width, unsigned int height, int fps, int verbose) : 
-		m_devName(devname), m_formatList(formatList), m_width(width), m_height(height), m_fps(fps), m_verbose(verbose) {};
+		m_devName(devname), m_formatList(formatList), m_width(width), m_height(height), m_fps(fps), m_verbose(verbose) {}
+
+	V4L2DeviceParameters(const char* devname, unsigned int format, unsigned int width, unsigned int height, int fps, int verbose) : 
+		m_devName(devname), m_width(width), m_height(height), m_fps(fps), m_verbose(verbose) {
+			if (format) {
+				m_formatList.push_back(format);
+			}
+	}
 		
 	std::string m_devName;
 	std::list<unsigned int> m_formatList;
