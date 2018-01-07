@@ -175,9 +175,9 @@ int V4l2Device::configureFormat(int fd, unsigned int format)
 		LOG(ERROR) << "Cannot set format for device:" << m_params.m_devName << " " << strerror(errno);
 		return -1;
 	}			
-	if (fmt.fmt.pix.pixelformat != m_params.m_format) 
+	if (fmt.fmt.pix.pixelformat != format) 
 	{
-		LOG(ERROR) << "Cannot set pixelformat to:" << fourcc(m_params.m_format) << " format is:" << fourcc(fmt.fmt.pix.pixelformat);
+		LOG(ERROR) << "Cannot set pixelformat to:" << fourcc(format) << " format is:" << fourcc(fmt.fmt.pix.pixelformat);
 		return -1;
 	}
 	if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
