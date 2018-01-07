@@ -153,8 +153,10 @@ int V4l2Device::configureFormat(int fd)
 		LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_params.m_width << "x" << m_params.m_height;
 		return 0;
 	}		
-		
-	for (unsigned int format : m_params.m_formatList) {
+	
+	std::list<unsigned int>::iterator it;
+	for (it = m_params.m_formatList.begin(); it != m_params.m_formatList.end(); ++it) {
+		unsigned int format = *it;
 		if (this->configureFormat(fd, format)==0) {
 			return 0;
 		}
