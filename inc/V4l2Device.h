@@ -14,6 +14,7 @@
 #define V4L2_DEVICE
 
 #include <string>
+#include <list>
 #include <linux/videodev2.h>
 
 #ifndef V4L2_PIX_FMT_VP8
@@ -31,10 +32,11 @@
 // ---------------------------------
 struct V4L2DeviceParameters 
 {
-	V4L2DeviceParameters(const char* devname, unsigned int format, unsigned int width, unsigned int height, int fps, int verbose) : 
-		m_devName(devname), m_format(format), m_width(width), m_height(height), m_fps(fps), m_verbose(verbose) {};
+	V4L2DeviceParameters(const char* devname, const std::list<unsigned int> & formatList, unsigned int width, unsigned int height, int fps, int verbose) : 
+		m_devName(devname), m_formatList(formatList), m_width(width), m_height(height), m_fps(fps), m_verbose(verbose) {};
 		
 	std::string m_devName;
+	std::list<unsigned int> m_formatList;
 	unsigned int m_format;
 	unsigned int m_width;
 	unsigned int m_height;
@@ -56,6 +58,7 @@ class V4l2Device
 		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);
 		int checkCapabilities(int fd, unsigned int mandatoryCapabilities);
 		int configureFormat(int fd);
+		int configureFormat(int fd, unsigned int format);
 		int configureParam(int fd);
 
 		virtual bool init(unsigned int mandatoryCapabilities);		

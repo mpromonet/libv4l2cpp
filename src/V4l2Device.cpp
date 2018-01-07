@@ -143,7 +143,7 @@ std::string fourcc(unsigned int format)
 int V4l2Device::configureFormat(int fd)
 {
 	
-	if (m_params.m_format==0) 
+	if (m_params.m_formatList.size()==0) 
 	{
 		this->queryFormat();
 		m_params.m_format = m_format;
@@ -151,12 +151,23 @@ int V4l2Device::configureFormat(int fd)
 		m_params.m_height = m_height;
 	}		
 		
+	for (unsigned int format : m_params.m_formatList) {
+		if (this->configureFormat(fd, format)==0) {
+			return 0;
+		}
+	}
+	return -1;
+}
+
+// configure capture format 
+int V4l2Device::configureFormat(int fd, unsigned int format)
+{
 	struct v4l2_format   fmt;			
 	memset(&(fmt), 0, sizeof(fmt));
 	fmt.type                = m_deviceType;
 	fmt.fmt.pix.width       = m_params.m_width;
 	fmt.fmt.pix.height      = m_params.m_height;
-	fmt.fmt.pix.pixelformat = m_params.m_format;
+	fmt.fmt.pix.pixelformat = format;
 	fmt.fmt.pix.field       = V4L2_FIELD_ANY;
 	
 	if (ioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
