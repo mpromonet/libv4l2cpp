@@ -195,7 +195,7 @@ int V4l2Device::configureFormat(int fd, unsigned int format, unsigned int width,
 		LOG(ERROR) << "Cannot set pixelformat to:" << fourcc(format) << " format is:" << fourcc(fmt.fmt.pix.pixelformat);
 		return -1;
 	}
-	if ((fmt.fmt.pix.width != m_params.m_width) || (fmt.fmt.pix.height != m_params.m_height))
+	if ((fmt.fmt.pix.width != width) || (fmt.fmt.pix.height != height))
 	{
 		LOG(WARN) << "Cannot set size width:" << fmt.fmt.pix.width << " height:" << fmt.fmt.pix.height;
 	}
