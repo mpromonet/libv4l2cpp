@@ -148,10 +148,10 @@ int V4l2Device::configureFormat(int fd)
 
 	unsigned int width = m_width;
 	unsigned int height = m_height;
-	if (m_params.m_width == 0)  {
+	if (m_params.m_width != 0)  {
 		width= m_params.m_width;
 	}
-	if (m_params.m_height == 0)  {
+	if (m_params.m_height != 0)  {
 		height= m_params.m_height;
 	}	
 	if  (m_params.m_formatList.size()==0)  {
