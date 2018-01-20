@@ -28,10 +28,10 @@ class V4l2Access
 		virtual ~V4l2Access() { delete m_device; }
 		
 		int getFd()         { return m_device->getFd();         }
-		int getBufferSize() { return m_device->getBufferSize(); }
-		int getFormat()     { return m_device->getFormat();     }
-		int getWidth()      { return m_device->getWidth();      }
-		int getHeight()     { return m_device->getHeight();     }
+		unsigned int getBufferSize() { return m_device->getBufferSize(); }
+		unsigned int getFormat()     { return m_device->getFormat();     }
+		unsigned int getWidth()      { return m_device->getWidth();      }
+		unsigned int getHeight()     { return m_device->getHeight();     }
 		void queryFormat()  { m_device->queryFormat();          }
 
 		int isReady()       { return m_device->isReady();       }
