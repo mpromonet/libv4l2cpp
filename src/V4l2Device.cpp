@@ -197,7 +197,7 @@ int V4l2Device::configureFormat(int fd, unsigned int format, unsigned int width,
 	}
 	if ((fmt.fmt.pix.width != width) || (fmt.fmt.pix.height != height))
 	{
-		LOG(WARN) << "Cannot set size width:" << fmt.fmt.pix.width << " height:" << fmt.fmt.pix.height;
+		LOG(WARN) << "Cannot set size to:" << width << "x" << height << " size is:"  << fmt.fmt.pix.width << "x" << fmt.fmt.pix.height;
 	}
 	
 	m_format     = fmt.fmt.pix.pixelformat;
