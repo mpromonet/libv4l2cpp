@@ -44,7 +44,6 @@ struct V4L2DeviceParameters
 		
 	std::string m_devName;
 	std::list<unsigned int> m_formatList;
-	unsigned int m_format;
 	unsigned int m_width;
 	unsigned int m_height;
 	int m_fps;			
@@ -65,7 +64,7 @@ class V4l2Device
 		int initdevice(const char *dev_name, unsigned int mandatoryCapabilities);
 		int checkCapabilities(int fd, unsigned int mandatoryCapabilities);
 		int configureFormat(int fd);
-		int configureFormat(int fd, unsigned int format);
+		int configureFormat(int fd, unsigned int format, unsigned int width, unsigned int height);
 		int configureParam(int fd);
 
 		virtual bool init(unsigned int mandatoryCapabilities);		
@@ -80,10 +79,10 @@ class V4l2Device
 		virtual bool start()   { return true; }
 		virtual bool stop()    { return true; }
 	
-		int getBufferSize() { return m_bufferSize; }
-		int getFormat()     { return m_format;     }
-		int getWidth()      { return m_width;      }
-		int getHeight()     { return m_height;     }
+		unsigned int getBufferSize() { return m_bufferSize; }
+		unsigned int getFormat()     { return m_format;     }
+		unsigned int getWidth()      { return m_width;      }
+		unsigned int getHeight()     { return m_height;     }
 		int getFd()         { return m_fd;         }
 		void queryFormat();	
 
@@ -92,10 +91,10 @@ class V4l2Device
 		int m_fd;
 		v4l2_buf_type m_deviceType;	
 	
-		int m_bufferSize;
-		int m_format;
-		int m_width;
-		int m_height;	
+		unsigned int m_bufferSize;
+		unsigned int m_format;
+		unsigned int m_width;
+		unsigned int m_height;	
 };
 
 

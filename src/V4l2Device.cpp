@@ -142,22 +142,32 @@ std::string fourcc(unsigned int format)
 // configure capture format 
 int V4l2Device::configureFormat(int fd)
 {
-	
-	if (m_params.m_formatList.size()==0) 
-	{
-		this->queryFormat();
-		m_params.m_format = m_format;
-		m_params.m_width  = m_width;
-		m_params.m_height = m_height;
-		
-		LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_params.m_width << "x" << m_params.m_height;
-		return 0;
-	}		
-	
+	// get current configuration
+	this->queryFormat();		
+	LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_width << "x" << m_height;
+
+	unsigned int width = m_width;
+	unsigned int height = m_height;
+	if (m_params.m_width == 0)  {
+		width= m_params.m_width;
+	}
+	if (m_params.m_height == 0)  {
+		height= m_params.m_height;
+	}	
+	if  (m_params.m_formatList.size()==0)  {
+		m_params.m_formatList.push_back(m_format);
+	}
+
+	// try to set format, widht, height
 	std::list<unsigned int>::iterator it;
 	for (it = m_params.m_formatList.begin(); it != m_params.m_formatList.end(); ++it) {
 		unsigned int format = *it;
-		if (this->configureFormat(fd, format)==0) {
+		if ( (format == m_format) && (width == m_width) && (height == m_height) ) {
+			// format is the current one
+			return 0;
+		}
+		else if (this->configureFormat(fd, format, width, height)==0) {
+			// format has been set
 			return 0;
 		}
 	}
@@ -165,13 +175,13 @@ int V4l2Device::configureFormat(int fd)
 }
 
 // configure capture format 
-int V4l2Device::configureFormat(int fd, unsigned int format)
+int V4l2Device::configureFormat(int fd, unsigned int format, unsigned int width, unsigned int height)
 {
 	struct v4l2_format   fmt;			
 	memset(&(fmt), 0, sizeof(fmt));
 	fmt.type                = m_deviceType;
-	fmt.fmt.pix.width       = m_params.m_width;
-	fmt.fmt.pix.height      = m_params.m_height;
+	fmt.fmt.pix.width       = width;
+	fmt.fmt.pix.height      = height;
 	fmt.fmt.pix.pixelformat = format;
 	fmt.fmt.pix.field       = V4L2_FIELD_ANY;
 	
