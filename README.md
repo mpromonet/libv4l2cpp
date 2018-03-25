@@ -4,13 +4,9 @@ libv4l2cpp
 
 It is a C++ wrapper for V4L2
 
-License
-------------
-Domain public 
-
 Dependencies
 ------------
- - liblog4cpp5-dev
+ - liblog4cpp5-dev (optional)
  
 V4L2 Capture
 -------------
