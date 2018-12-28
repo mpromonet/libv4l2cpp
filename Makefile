@@ -1,12 +1,12 @@
-CFLAGS = -W -Wall -pthread -g -pipe $(CFLAGS_EXTRA)
-CFLAGS += -I inc
+CXXFLAGS = -W -Wall -pthread -g -pipe $(EXTRA_CXXFLAGS)
+CXXFLAGS += -I inc
 RM = rm -rf
-CC = $(CROSS)gcc
-AR = $(CROSS)ar
+CXX ?= $(CROSS)g++
+AR ?= $(CROSS)ar
 PREFIX?=/usr
 
 ifneq ($(wildcard $(SYSROOT)$(PREFIX)/include/log4cpp/Category.hh),)
-CFLAGS += -DHAVE_LOG4CPP -I $(SYSROOT)$(PREFIX)/include
+CXXFLAGS += -DHAVE_LOG4CPP -I $(SYSROOT)$(PREFIX)/include
 endif
 
 V4L2WRAPPER_CPP:=$(wildcard src/*.cpp)
@@ -17,7 +17,7 @@ V4L2WRAPPER_OBJ:=$(V4L2WRAPPER_CPP:%.cpp=%.o)
 all: libv4l2wrapper.a
 
 %.o: %.cpp
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 libv4l2wrapper.a: $(V4L2WRAPPER_OBJ)
 	$(AR) rcs $@ $^
