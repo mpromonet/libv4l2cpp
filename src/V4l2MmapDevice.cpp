@@ -33,7 +33,7 @@ bool V4l2MmapDevice::init(unsigned int mandatoryCapabilities)
 	bool ret = V4l2Device::init(mandatoryCapabilities);
 	if (ret)
 	{
-		this->start();
+		ret = this->start();
 	}
 	return ret;
 }
