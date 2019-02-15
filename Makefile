@@ -27,7 +27,7 @@ clean:
 	-@$(RM) *.a $(V4L2WRAPPER_OBJ)
 
 install:
-	mkdir $(PREFIX)/include/libv4l2cpp/
+	mkdir -p $(PREFIX)/include/libv4l2cpp/
 	install -D -m 0755 inc/*.h $(PREFIX)/include/libv4l2cpp/
 	install -D -m 0755 *.a $(PREFIX)/lib
 
