@@ -1,4 +1,4 @@
-CXXFLAGS = -W -Wall -pthread -g -pipe $(EXTRA_CXXFLAGS)
+CXXFLAGS ?= -W -Wall -pthread -g -pipe $(EXTRA_CXXFLAGS)
 CXXFLAGS += -I inc
 RM = rm -rf
 CXX ?= $(CROSS)g++
