@@ -1,2 +1,5 @@
 src/*.o
 *.a
+*.cmake
+CMakeCache.txt
+CMakeFiles/
