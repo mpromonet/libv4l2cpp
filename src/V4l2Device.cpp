@@ -12,7 +12,6 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 
 // libv4l2
 #include <linux/videodev2.h>
@@ -78,7 +77,7 @@ bool V4l2Device::init(unsigned int mandatoryCapabilities)
 // intialize the V4L2 device
 int V4l2Device::initdevice(const char *dev_name, unsigned int mandatoryCapabilities)
 {
-	m_fd = open(dev_name,  O_RDWR | O_NONBLOCK);
+	m_fd = open(dev_name,  m_params.m_openFlags);
 	if (m_fd < 0) 
 	{
 		LOG(ERROR) << "Cannot open device:" << m_params.m_devName << " " << strerror(errno);
