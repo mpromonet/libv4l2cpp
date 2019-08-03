@@ -46,6 +46,8 @@ V4l2MmapDevice::~V4l2MmapDevice()
 
 bool V4l2MmapDevice::start() 
 {
+	LOG(NOTICE) << "Device " << m_params.m_devName;
+
 	bool success = true;
 	struct v4l2_requestbuffers req;
 	memset (&req, 0, sizeof(req));
@@ -133,6 +135,8 @@ bool V4l2MmapDevice::start()
 
 bool V4l2MmapDevice::stop() 
 {
+	LOG(NOTICE) << "Device " << m_params.m_devName;
+
 	bool success = true;
 	
 	int type = m_deviceType;
