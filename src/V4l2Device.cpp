@@ -161,11 +161,7 @@ int V4l2Device::configureFormat(int fd)
 	std::list<unsigned int>::iterator it;
 	for (it = m_params.m_formatList.begin(); it != m_params.m_formatList.end(); ++it) {
 		unsigned int format = *it;
-		if ( (format == m_format) && (width == m_width) && (height == m_height) ) {
-			// format is the current one
-			return 0;
-		}
-		else if (this->configureFormat(fd, format, width, height)==0) {
+		if (this->configureFormat(fd, format, width, height)==0) {
 			// format has been set
 			return 0;
 		}
