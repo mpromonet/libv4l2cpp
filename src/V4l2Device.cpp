@@ -20,6 +20,12 @@
 
 #include "V4l2Device.h"
 
+std::string fourcc(unsigned int format)
+{
+	char formatArray[] = { (char)(format&0xff), (char)((format>>8)&0xff), (char)((format>>16)&0xff), (char)((format>>24)&0xff), 0 };
+	return std::string(formatArray, strlen(formatArray));
+}
+
 // -----------------------------------------
 //    V4L2Device
 // -----------------------------------------
@@ -52,6 +58,8 @@ void V4l2Device::queryFormat()
 		m_width      = fmt.fmt.pix.width;
 		m_height     = fmt.fmt.pix.height;
 		m_bufferSize = fmt.fmt.pix.sizeimage;
+
+		LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_width << "x" << m_height << " bufferSize:" << m_bufferSize;
 	}
 }
 
@@ -132,18 +140,11 @@ int V4l2Device::checkCapabilities(int fd, unsigned int mandatoryCapabilities)
 	return 0;
 }
 
-std::string fourcc(unsigned int format)
-{
-	char formatArray[] = { (char)(format&0xff), (char)((format>>8)&0xff), (char)((format>>16)&0xff), (char)((format>>24)&0xff), 0 };
-	return std::string(formatArray, strlen(formatArray));
-}
-
 // configure capture format 
 int V4l2Device::configureFormat(int fd)
 {
 	// get current configuration
 	this->queryFormat();		
-	LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_width << "x" << m_height << " bufferSize:" << m_bufferSize;
 
 	unsigned int width = m_width;
 	unsigned int height = m_height;
@@ -163,6 +164,8 @@ int V4l2Device::configureFormat(int fd)
 		unsigned int format = *it;
 		if (this->configureFormat(fd, format, width, height)==0) {
 			// format has been set
+			// get the format again because calling SET-FMT return a bad buffersize using v4l2loopback
+			this->queryFormat();		
 			return 0;
 		}
 	}
