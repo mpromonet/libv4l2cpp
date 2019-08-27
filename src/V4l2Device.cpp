@@ -143,7 +143,7 @@ int V4l2Device::configureFormat(int fd)
 {
 	// get current configuration
 	this->queryFormat();		
-	LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_width << "x" << m_height;
+	LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_width << "x" << m_height << " bufferSize:" << m_bufferSize;
 
 	unsigned int width = m_width;
 	unsigned int height = m_height;
