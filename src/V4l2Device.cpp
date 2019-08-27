@@ -182,7 +182,7 @@ int V4l2Device::configureFormat(int fd, unsigned int format, unsigned int width,
 	
 	if (ioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
 	{
-		LOG(ERROR) << "Cannot set format for device:" << m_params.m_devName << " " << strerror(errno);
+		LOG(ERROR) << "Cannot set format:" << fourcc(format) << " for device:" << m_params.m_devName << " " << strerror(errno);
 		return -1;
 	}			
 	if (fmt.fmt.pix.pixelformat != format) 

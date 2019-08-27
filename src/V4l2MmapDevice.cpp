@@ -91,7 +91,7 @@ bool V4l2MmapDevice::start()
 			{
 				LOG(INFO) << "Device " << m_params.m_devName << " buffer idx:" << n_buffers << " size:" << buf.length << " offset:" << buf.m.offset;
 				m_buffer[n_buffers].length = buf.length;
-				if (m_buffer[n_buffers].length) {
+				if (!m_buffer[n_buffers].length) {
 					m_buffer[n_buffers].length = buf.bytesused;
 				}
 				m_buffer[n_buffers].start = mmap (   NULL /* start anywhere */, 
