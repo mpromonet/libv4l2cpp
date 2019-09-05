@@ -9,10 +9,10 @@
 **
 ** -------------------------------------------------------------------------*/
 
-#include <string.h>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
 #include <fcntl.h>
-#include <stdio.h>
-#include <errno.h> 
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
@@ -25,7 +25,7 @@
 
 V4l2MmapDevice::V4l2MmapDevice(const V4L2DeviceParameters & params, v4l2_buf_type deviceType) : V4l2Device(params, deviceType), n_buffers(0) 
 {
-	memset(&m_buffer, 0, sizeof(m_buffer));
+	std::memset(&m_buffer, 0, sizeof(m_buffer));
 }
 
 bool V4l2MmapDevice::init(unsigned int mandatoryCapabilities)
@@ -49,8 +49,7 @@ bool V4l2MmapDevice::start()
 	LOG(NOTICE) << "Device " << m_params.m_devName;
 
 	bool success = true;
-	struct v4l2_requestbuffers req;
-	memset (&req, 0, sizeof(req));
+	struct v4l2_requestbuffers req = {};
 	req.count               = V4L2MMAP_NBBUFFER;
 	req.type                = m_deviceType;
 	req.memory              = V4L2_MEMORY_MMAP;
@@ -64,7 +63,7 @@ bool V4l2MmapDevice::start()
 		} 
 		else 
 		{
-			perror("VIDIOC_REQBUFS");
+			std::perror("VIDIOC_REQBUFS");
 			success = false;
 		}
 	}
@@ -73,18 +72,17 @@ bool V4l2MmapDevice::start()
 		LOG(NOTICE) << "Device " << m_params.m_devName << " nb buffer:" << req.count;
 		
 		// allocate buffers
-		memset(&m_buffer,0, sizeof(m_buffer));
+		std::memset(&m_buffer,0, sizeof(m_buffer));
 		for (n_buffers = 0; n_buffers < req.count; ++n_buffers) 
 		{
-			struct v4l2_buffer buf;
-			memset (&buf, 0, sizeof(buf));
+			struct v4l2_buffer buf = {};
 			buf.type        = m_deviceType;
 			buf.memory      = V4L2_MEMORY_MMAP;
 			buf.index       = n_buffers;
 
 			if (-1 == ioctl(m_fd, VIDIOC_QUERYBUF, &buf))
 			{
-				perror("VIDIOC_QUERYBUF");
+				std::perror("VIDIOC_QUERYBUF");
 				success = false;
 			}
 			else
@@ -103,7 +101,7 @@ bool V4l2MmapDevice::start()
 
 				if (MAP_FAILED == m_buffer[n_buffers].start)
 				{
-					perror("mmap");
+					std::perror("mmap");
 					success = false;
 				}
 			}
@@ -112,15 +110,14 @@ bool V4l2MmapDevice::start()
 		// queue buffers
 		for (unsigned int i = 0; i < n_buffers; ++i) 
 		{
-			struct v4l2_buffer buf;
-			memset (&buf, 0, sizeof(buf));
+			struct v4l2_buffer buf = {};
 			buf.type        = m_deviceType;
 			buf.memory      = V4L2_MEMORY_MMAP;
 			buf.index       = i;
 
 			if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf))
 			{
-				perror("VIDIOC_QBUF");
+				std::perror("VIDIOC_QBUF");
 				success = false;
 			}
 		}
@@ -129,7 +126,7 @@ bool V4l2MmapDevice::start()
 		int type = m_deviceType;
 		if (-1 == ioctl(m_fd, VIDIOC_STREAMON, &type))
 		{
-			perror("VIDIOC_STREAMON");
+			std::perror("VIDIOC_STREAMON");
 			success = false;
 		}
 	}
@@ -145,7 +142,7 @@ bool V4l2MmapDevice::stop()
 	int type = m_deviceType;
 	if (-1 == ioctl(m_fd, VIDIOC_STREAMOFF, &type))
 	{
-		perror("VIDIOC_STREAMOFF");      
+		std::perror("VIDIOC_STREAMOFF");
 		success = false;
 	}
 
@@ -153,20 +150,19 @@ bool V4l2MmapDevice::stop()
 	{
 		if (-1 == munmap (m_buffer[i].start, m_buffer[i].length))
 		{
-			perror("munmap");
+			std::perror("munmap");
 			success = false;
 		}
 	}
 	
 	// free buffers
-	struct v4l2_requestbuffers req;
-	memset (&req, 0, sizeof(req));
+	struct v4l2_requestbuffers req = {};
 	req.count               = 0;
 	req.type                = m_deviceType;
 	req.memory              = V4L2_MEMORY_MMAP;
 	if (-1 == ioctl(m_fd, VIDIOC_REQBUFS, &req)) 
 	{
-		perror("VIDIOC_REQBUFS");
+		std::perror("VIDIOC_REQBUFS");
 		success = false;
 	}
 	
@@ -179,14 +175,13 @@ size_t V4l2MmapDevice::readInternal(char* buffer, size_t bufferSize)
 	size_t size = 0;
 	if (n_buffers > 0)
 	{
-		struct v4l2_buffer buf;	
-		memset (&buf, 0, sizeof(buf));
+		struct v4l2_buffer buf = {};
 		buf.type = m_deviceType;
 		buf.memory = V4L2_MEMORY_MMAP;
 
 		if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &buf)) 
 		{
-			perror("VIDIOC_DQBUF");
+			std::perror("VIDIOC_DQBUF");
 			size = -1;
 		}
 		else if (buf.index < n_buffers)
@@ -197,11 +192,11 @@ size_t V4l2MmapDevice::readInternal(char* buffer, size_t bufferSize)
 				size = bufferSize;
 				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << bufferSize << " needed:" << buf.bytesused;
 			}
-			memcpy(buffer, m_buffer[buf.index].start, size);
+			std::memcpy(buffer, m_buffer[buf.index].start, size);
 
 			if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf))
 			{
-				perror("VIDIOC_QBUF");
+				std::perror("VIDIOC_QBUF");
 				size = -1;
 			}
 		}
@@ -214,14 +209,13 @@ size_t V4l2MmapDevice::writeInternal(char* buffer, size_t bufferSize)
 	size_t size = 0;
 	if (n_buffers > 0)
 	{
-		struct v4l2_buffer buf;	
-		memset (&buf, 0, sizeof(buf));
+		struct v4l2_buffer buf = {};
 		buf.type = m_deviceType;
 		buf.memory = V4L2_MEMORY_MMAP;
 
 		if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &buf)) 
 		{
-			perror("VIDIOC_DQBUF");
+			std::perror("VIDIOC_DQBUF");
 			size = -1;
 		}
 		else if (buf.index < n_buffers)
@@ -232,12 +226,12 @@ size_t V4l2MmapDevice::writeInternal(char* buffer, size_t bufferSize)
 				size = buf.length;
 				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << buf.length << " needed:" << size;
 			}
-			memcpy(m_buffer[buf.index].start, buffer, size);
+			std::memcpy(m_buffer[buf.index].start, buffer, size);
 			buf.bytesused = size;
 
 			if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf))
 			{
-				perror("VIDIOC_QBUF");
+				std::perror("VIDIOC_QBUF");
 				size = -1;
 			}
 		}
