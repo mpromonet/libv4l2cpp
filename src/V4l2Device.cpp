@@ -29,7 +29,7 @@ std::string fourcc(unsigned int format)
 // -----------------------------------------
 //    V4L2Device
 // -----------------------------------------
-V4l2Device::V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType) : m_params(params), m_fd(-1), m_deviceType(deviceType), m_bufferSize(0), m_format(0)
+V4l2Device::V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType) : m_params(params), m_fd(-1), m_deviceType(deviceType), m_bufferSize(0), m_format(0), m_width(), m_height()
 {
 }
 
