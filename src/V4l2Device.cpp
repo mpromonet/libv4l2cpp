@@ -7,11 +7,11 @@
 ** 
 ** -------------------------------------------------------------------------*/
 
-#include <cstring>
 #include <cerrno>
-#include <unistd.h>
+#include <cstring>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 // libv4l2
 #include <linux/videodev2.h>

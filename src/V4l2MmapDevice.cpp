@@ -9,12 +9,12 @@
 **
 ** -------------------------------------------------------------------------*/
 
-#include <cstring>
-#include <cstdio>
 #include <cerrno>
+#include <cstdio>
+#include <cstring>
 #include <fcntl.h>
-#include <sys/mman.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
 
 // libv4l2
 #include <linux/videodev2.h>

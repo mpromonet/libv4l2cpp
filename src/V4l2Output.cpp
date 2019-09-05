@@ -15,8 +15,8 @@
 // project
 #include "logger.h"
 
-#include "V4l2Output.h"
 #include "V4l2MmapDevice.h"
+#include "V4l2Output.h"
 #include "V4l2ReadWriteDevice.h"
 
 // -----------------------------------------
