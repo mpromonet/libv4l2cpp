@@ -22,7 +22,7 @@
 
 std::string fourcc(unsigned int format)
 {
-	char formatArray[] = { (char)(format&0xff), (char)((format>>8)&0xff), (char)((format>>16)&0xff), (char)((format>>24)&0xff), 0 };
+	char formatArray[] = { static_cast<char>(format&0xff), static_cast<char>((format>>8)&0xff), static_cast<char>((format>>16)&0xff), static_cast<char>((format>>24)&0xff), 0 };
 	return std::string(formatArray, std::strlen(formatArray));
 }
 
