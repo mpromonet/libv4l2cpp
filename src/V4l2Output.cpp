@@ -33,7 +33,7 @@ V4l2Output* V4l2Output::create(const V4L2DeviceParameters & param, IoType iotype
 			videoDevice = new V4l2MmapDevice(param, V4L2_BUF_TYPE_VIDEO_OUTPUT); 
 			caps |= V4L2_CAP_STREAMING;
 		break;
-		default:          
+		case IOTYPE_READWRITE:
 			videoDevice = new V4l2ReadWriteDevice(param, V4L2_BUF_TYPE_VIDEO_OUTPUT); 
 			caps |= V4L2_CAP_READWRITE;
 		break;
@@ -56,6 +56,13 @@ V4l2Output* V4l2Output::create(const V4L2DeviceParameters & param, IoType iotype
 //    constructor
 // -----------------------------------------
 V4l2Output::V4l2Output(V4l2Device* device) : V4l2Access(device)
+{
+}
+
+// -----------------------------------------
+//    destructor
+// -----------------------------------------
+V4l2Output::~V4l2Output() 
 {
 }
 

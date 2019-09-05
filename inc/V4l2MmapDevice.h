@@ -27,8 +27,10 @@ class V4l2MmapDevice : public V4l2Device
 		V4l2MmapDevice(const V4L2DeviceParameters & params, v4l2_buf_type deviceType);		
 		virtual ~V4l2MmapDevice();
 
+
 		virtual bool init(unsigned int mandatoryCapabilities);
-		virtual bool isReady() { return  ((m_fd != -1)&& (n_buffers != 0)); };
+		virtual bool isReady() { return  ((m_fd != -1)&& (n_buffers != 0)); }
+
 		virtual bool start();
 		virtual bool stop();
 	

@@ -70,8 +70,8 @@ class V4l2Device
 		int configureParam(int fd);
 
 		virtual bool init(unsigned int mandatoryCapabilities);		
-		virtual size_t writeInternal(char*, size_t) { return -1; };
-		virtual size_t readInternal(char*, size_t)  { return -1; };		
+		virtual size_t writeInternal(char*, size_t) { return -1; }
+		virtual size_t readInternal(char*, size_t)  { return -1; }
 	
 	public:
 		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);		

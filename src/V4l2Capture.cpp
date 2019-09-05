@@ -34,7 +34,7 @@ V4l2Capture* V4l2Capture::create(const V4L2DeviceParameters & param, IoType ioty
 			videoDevice = new V4l2MmapDevice(param, V4L2_BUF_TYPE_VIDEO_CAPTURE); 
 			caps |= V4L2_CAP_STREAMING;
 		break;
-		default:          
+		case IOTYPE_READWRITE:
 			videoDevice = new V4l2ReadWriteDevice(param, V4L2_BUF_TYPE_VIDEO_CAPTURE); 
 			caps |= V4L2_CAP_READWRITE;
 		break;
@@ -57,6 +57,13 @@ V4l2Capture* V4l2Capture::create(const V4L2DeviceParameters & param, IoType ioty
 //    constructor
 // -----------------------------------------
 V4l2Capture::V4l2Capture(V4l2Device* device) : V4l2Access(device)
+{
+}
+
+// -----------------------------------------
+//    destructor
+// -----------------------------------------
+V4l2Capture::~V4l2Capture() 
 {
 }
 
