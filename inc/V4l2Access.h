@@ -21,11 +21,11 @@ class V4l2Access
 		enum IoType
 		{
 			IOTYPE_READWRITE,
-			IOTYPE_MMAP,
+			IOTYPE_MMAP
 		};
 		
-		V4l2Access(V4l2Device* device) : m_device(device) {}
-		virtual ~V4l2Access() { delete m_device; }
+		V4l2Access(V4l2Device* device);
+		virtual ~V4l2Access();
 		
 		int getFd()         { return m_device->getFd();         }
 		unsigned int getBufferSize() { return m_device->getBufferSize(); }
