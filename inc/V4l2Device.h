@@ -18,6 +18,8 @@
 #include <linux/videodev2.h>
 #include <fcntl.h>
 
+#define V4L2WRAPPER_SUPPORT_PARTIAL_WRITE   1
+
 #ifndef V4L2_PIX_FMT_VP8
 #define V4L2_PIX_FMT_VP8  v4l2_fourcc('V', 'P', '8', '0')
 #endif
@@ -71,6 +73,9 @@ class V4l2Device
 
 		virtual bool init(unsigned int mandatoryCapabilities);		
 		virtual size_t writeInternal(char*, size_t) { return -1; }
+		virtual bool startPartialWrite(void)        { return false; }
+		virtual size_t writePartialInternal(char*, size_t) { return -1; }
+		virtual bool endPartialWrite(void)          { return false; }
 		virtual size_t readInternal(char*, size_t)  { return -1; }
 	
 	public:
@@ -97,6 +102,9 @@ class V4l2Device
 		unsigned int m_format;
 		unsigned int m_width;
 		unsigned int m_height;	
+
+		struct v4l2_buffer m_partialWriteBuf;
+		bool m_partialWriteInProgress;
 };
 
 
