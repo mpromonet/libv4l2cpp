@@ -18,8 +18,6 @@
 #include <linux/videodev2.h>
 #include <fcntl.h>
 
-#define V4L2WRAPPER_SUPPORT_PARTIAL_WRITE   1
-
 #ifndef V4L2_PIX_FMT_VP8
 #define V4L2_PIX_FMT_VP8  v4l2_fourcc('V', 'P', '8', '0')
 #endif
