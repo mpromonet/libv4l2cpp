@@ -245,7 +245,7 @@ size_t V4l2MmapDevice::writeInternal(char* buffer, size_t bufferSize)
 	return size;
 }
 
-bool V4l2MmapDevice::startPartialWrite(void)
+bool V4l2MmapDevice::startPartialWrite()
 {
 	if (n_buffers <= 0)
 		return false;
@@ -287,7 +287,7 @@ size_t V4l2MmapDevice::writePartialInternal(char* buffer, size_t bufferSize)
 	return size;
 }
 
-bool V4l2MmapDevice::endPartialWrite(void)
+bool V4l2MmapDevice::endPartialWrite()
 {
 	if (!m_partialWriteInProgress)
 		return false;
