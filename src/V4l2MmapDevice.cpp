@@ -49,8 +49,7 @@ bool V4l2MmapDevice::start()
 	LOG(NOTICE) << "Device " << m_params.m_devName;
 
 	bool success = true;
-	struct v4l2_requestbuffers req;
-	memset (&req, 0, sizeof(req));
+	struct v4l2_requestbuffers req{};
 	req.count               = V4L2MMAP_NBBUFFER;
 	req.type                = m_deviceType;
 	req.memory              = V4L2_MEMORY_MMAP;
@@ -76,8 +75,7 @@ bool V4l2MmapDevice::start()
 		memset(&m_buffer,0, sizeof(m_buffer));
 		for (n_buffers = 0; n_buffers < req.count; ++n_buffers) 
 		{
-			struct v4l2_buffer buf;
-			memset (&buf, 0, sizeof(buf));
+			struct v4l2_buffer buf{};
 			buf.type        = m_deviceType;
 			buf.memory      = V4L2_MEMORY_MMAP;
 			buf.index       = n_buffers;
@@ -112,8 +110,7 @@ bool V4l2MmapDevice::start()
 		// queue buffers
 		for (unsigned int i = 0; i < n_buffers; ++i) 
 		{
-			struct v4l2_buffer buf;
-			memset (&buf, 0, sizeof(buf));
+			struct v4l2_buffer buf{};
 			buf.type        = m_deviceType;
 			buf.memory      = V4L2_MEMORY_MMAP;
 			buf.index       = i;
@@ -159,8 +156,7 @@ bool V4l2MmapDevice::stop()
 	}
 	
 	// free buffers
-	struct v4l2_requestbuffers req;
-	memset (&req, 0, sizeof(req));
+	struct v4l2_requestbuffers req{};
 	req.count               = 0;
 	req.type                = m_deviceType;
 	req.memory              = V4L2_MEMORY_MMAP;
@@ -179,8 +175,7 @@ size_t V4l2MmapDevice::readInternal(char* buffer, size_t bufferSize)
 	size_t size = 0;
 	if (n_buffers > 0)
 	{
-		struct v4l2_buffer buf;	
-		memset (&buf, 0, sizeof(buf));
+		struct v4l2_buffer buf{};
 		buf.type = m_deviceType;
 		buf.memory = V4L2_MEMORY_MMAP;
 
@@ -214,8 +209,7 @@ size_t V4l2MmapDevice::writeInternal(char* buffer, size_t bufferSize)
 	size_t size = 0;
 	if (n_buffers > 0)
 	{
-		struct v4l2_buffer buf;	
-		memset (&buf, 0, sizeof(buf));
+		struct v4l2_buffer buf{};
 		buf.type = m_deviceType;
 		buf.memory = V4L2_MEMORY_MMAP;
 
