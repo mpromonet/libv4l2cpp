@@ -9,7 +9,7 @@
 **
 ** -------------------------------------------------------------------------*/
 
-#include <string.h>
+#include <cstring>
 
 // libv4l2
 #include <linux/videodev2.h>

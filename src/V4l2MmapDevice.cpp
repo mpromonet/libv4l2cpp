@@ -9,10 +9,10 @@
 **
 ** -------------------------------------------------------------------------*/
 
-#include <string.h>
+#include <cstring>
 #include <fcntl.h>
-#include <stdio.h>
-#include <errno.h> 
+#include <cstdio>
+#include <cerrno>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
