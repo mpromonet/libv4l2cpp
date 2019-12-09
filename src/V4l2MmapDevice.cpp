@@ -279,7 +279,7 @@ size_t V4l2MmapDevice::writePartialInternal(char* buffer, size_t bufferSize)
 				new_size = m_partialWriteBuf.length;
 			}
 			size = new_size - m_partialWriteBuf.bytesused;
-			memcpy(&((char *)m_buffer[m_partialWriteBuf.index].start)[m_partialWriteBuf.bytesused], buffer, size);
+			memcpy(&(static_cast<char *>(m_buffer[m_partialWriteBuf.index].start))[m_partialWriteBuf.bytesused], buffer, size);
 
 			m_partialWriteBuf.bytesused += size;
 		}
