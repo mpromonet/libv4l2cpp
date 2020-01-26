@@ -152,7 +152,8 @@ int V4l2Device::configureFormat(int fd)
 	if (m_params.m_height != 0)  {
 		height= m_params.m_height;
 	}	
-	if  (m_params.m_formatList.empty())  {
+
+	if  ( m_params.m_formatList.empty() && (m_format != 0) )  {
 		m_params.m_formatList.push_back(m_format);
 	}
 

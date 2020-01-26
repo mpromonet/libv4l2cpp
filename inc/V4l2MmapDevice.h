@@ -21,6 +21,9 @@ class V4l2MmapDevice : public V4l2Device
 {	
 	protected:	
 		size_t writeInternal(char* buffer, size_t bufferSize);
+		bool startPartialWrite(void);
+		size_t writePartialInternal(char*, size_t);
+		bool endPartialWrite(void);
 		size_t readInternal(char* buffer, size_t bufferSize);
 			
 	public:
