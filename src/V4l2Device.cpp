@@ -20,8 +20,7 @@
 
 #include "V4l2Device.h"
 
-std::string fourcc(unsigned int format)
-{
+std::string V4l2Device::fourcc(unsigned int format) {
 	char formatArray[] = { (char)(format&0xff), (char)((format>>8)&0xff), (char)((format>>16)&0xff), (char)((format>>24)&0xff), 0 };
 	return std::string(formatArray, strlen(formatArray));
 }
