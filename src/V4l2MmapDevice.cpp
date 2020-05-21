@@ -229,8 +229,8 @@ size_t V4l2MmapDevice::writeInternal(char* buffer, size_t bufferSize)
 			size = bufferSize;
 			if (size > buf.length)
 			{
-				size = buf.length;
 				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << buf.length << " needed:" << size;
+				size = buf.length;
 			}
 			memcpy(m_buffer[buf.index].start, buffer, size);
 			buf.bytesused = size;
@@ -245,6 +245,63 @@ size_t V4l2MmapDevice::writeInternal(char* buffer, size_t bufferSize)
 	return size;
 }
 
+bool V4l2MmapDevice::startPartialWrite(void)
+{
+	if (n_buffers <= 0)
+		return false;
+	if (m_partialWriteInProgress)
+		return false;
+	memset(&m_partialWriteBuf, 0, sizeof(m_partialWriteBuf));
+	m_partialWriteBuf.type = m_deviceType;
+	m_partialWriteBuf.memory = V4L2_MEMORY_MMAP;
+	if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &m_partialWriteBuf))
+	{
+		perror("VIDIOC_DQBUF");
+		return false;
+	}
+	m_partialWriteBuf.bytesused = 0;
+	m_partialWriteInProgress = true;
+	return true;
+}
 
+size_t V4l2MmapDevice::writePartialInternal(char* buffer, size_t bufferSize)
+{
+	size_t new_size = 0;
+	size_t size = 0;
+	if ((n_buffers > 0) && m_partialWriteInProgress)
+	{
+		if (m_partialWriteBuf.index < n_buffers)
+		{
+			new_size = m_partialWriteBuf.bytesused + bufferSize;
+			if (new_size > m_partialWriteBuf.length)
+			{
+				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << m_partialWriteBuf.length << " needed:" << new_size;
+				new_size = m_partialWriteBuf.length;
+			}
+			size = new_size - m_partialWriteBuf.bytesused;
+			memcpy(&((char *)m_buffer[m_partialWriteBuf.index].start)[m_partialWriteBuf.bytesused], buffer, size);
 
+			m_partialWriteBuf.bytesused += size;
+		}
+	}
+	return size;
+}
 
+bool V4l2MmapDevice::endPartialWrite(void)
+{
+	if (!m_partialWriteInProgress)
+		return false;
+	if (n_buffers <= 0)
+	{
+		m_partialWriteInProgress = false; // abort partial write
+		return true;
+	}
+	if (-1 == ioctl(m_fd, VIDIOC_QBUF, &m_partialWriteBuf))
+	{
+		perror("VIDIOC_QBUF");
+		m_partialWriteInProgress = false; // abort partial write
+		return true;
+	}
+	m_partialWriteInProgress = false;
+	return true;
+}
