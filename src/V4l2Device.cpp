@@ -59,7 +59,7 @@ void V4l2Device::queryFormat()
 		m_height     = fmt.fmt.pix.height;
 		m_bufferSize = fmt.fmt.pix.sizeimage;
 
-		LOG(NOTICE) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_width << "x" << m_height << " bufferSize:" << m_bufferSize;
+		LOG(DEBUG) << m_params.m_devName << ":" << fourcc(m_format) << " size:" << m_width << "x" << m_height << " bufferSize:" << m_bufferSize;
 	}
 }
 
