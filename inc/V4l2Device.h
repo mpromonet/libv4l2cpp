@@ -92,6 +92,7 @@ class V4l2Device
 		void queryFormat();	
 
 		static std::string fourcc(unsigned int format);
+		static unsigned int fourcc(const char* format);
 		
 	protected:
 		V4L2DeviceParameters m_params;
