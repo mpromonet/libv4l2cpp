@@ -67,7 +67,7 @@ class V4l2Device
 		int checkCapabilities(int fd, unsigned int mandatoryCapabilities);
 		int configureFormat(int fd);
 		int configureFormat(int fd, unsigned int format, unsigned int width, unsigned int height);
-		int configureParam(int fd);
+		int configureParam(int fd, int fps);
 
 		virtual bool init(unsigned int mandatoryCapabilities);		
 		virtual size_t writeInternal(char*, size_t) { return -1; }
@@ -90,6 +90,12 @@ class V4l2Device
 		unsigned int getHeight()     { return m_height;     }
 		int getFd()         { return m_fd;         }
 		void queryFormat();	
+		int setFormat(unsigned int format, unsigned int width, unsigned int height) {
+			return this->configureFormat(m_fd, format, width, height);
+		}
+		int setFps(int fps) {
+			return this->configureParam(m_fd, fps);
+		}		
 
 		static std::string fourcc(unsigned int format);
 		static unsigned int fourcc(const char* format);

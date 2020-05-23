@@ -111,7 +111,7 @@ int V4l2Device::initdevice(const char *dev_name, unsigned int mandatoryCapabilit
 		this->close();
 		return -1;
 	}
-	if (configureParam(m_fd) !=0)
+	if (configureParam(m_fd, m_params.m_fps) !=0)
 	{
 		this->close();
 		return -1;
@@ -218,15 +218,15 @@ int V4l2Device::configureFormat(int fd, unsigned int format, unsigned int width,
 }
 
 // configure capture FPS 
-int V4l2Device::configureParam(int fd)
+int V4l2Device::configureParam(int fd, int fps)
 {
-	if (m_params.m_fps!=0)
+	if (fps!=0)
 	{
 		struct v4l2_streamparm   param;			
 		memset(&(param), 0, sizeof(param));
 		param.type = m_deviceType;
 		param.parm.capture.timeperframe.numerator = 1;
-		param.parm.capture.timeperframe.denominator = m_params.m_fps;
+		param.parm.capture.timeperframe.denominator = fps;
 
 		if (ioctl(fd, VIDIOC_S_PARM, &param) == -1)
 		{
