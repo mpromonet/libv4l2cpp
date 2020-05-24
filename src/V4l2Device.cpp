@@ -187,10 +187,20 @@ int V4l2Device::configureFormat(int fd, unsigned int format, unsigned int width,
 	struct v4l2_format   fmt;			
 	memset(&(fmt), 0, sizeof(fmt));
 	fmt.type                = m_deviceType;
-	fmt.fmt.pix.width       = width;
-	fmt.fmt.pix.height      = height;
-	fmt.fmt.pix.pixelformat = format;
-	fmt.fmt.pix.field       = V4L2_FIELD_ANY;
+        if (ioctl(m_fd,VIDIOC_G_FMT,&fmt) == -1)
+        {
+		LOG(ERROR) << m_params.m_devName << ": Cannot get format " << strerror(errno);
+		return -1;
+	}
+	if (width != 0) {
+		fmt.fmt.pix.width       = width;
+	}
+	if (height != 0) {
+		fmt.fmt.pix.height      = height;
+	}
+	if (format != 0) {
+		fmt.fmt.pix.pixelformat = format;
+	}
 	
 	if (ioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
 	{
