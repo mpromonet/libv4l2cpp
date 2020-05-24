@@ -194,17 +194,17 @@ int V4l2Device::configureFormat(int fd, unsigned int format, unsigned int width,
 	
 	if (ioctl(fd, VIDIOC_S_FMT, &fmt) == -1)
 	{
-		LOG(ERROR) << "Cannot set format:" << fourcc(format) << " for device:" << m_params.m_devName << " " << strerror(errno);
+		LOG(ERROR) << m_params.m_devName << ": Cannot set format:" << fourcc(format) << " " << strerror(errno);
 		return -1;
 	}			
 	if (fmt.fmt.pix.pixelformat != format) 
 	{
-		LOG(ERROR) << "Cannot set pixelformat to:" << fourcc(format) << " format is:" << fourcc(fmt.fmt.pix.pixelformat);
+		LOG(ERROR) << m_params.m_devName << ": Cannot set pixelformat to:" << fourcc(format) << " format is:" << fourcc(fmt.fmt.pix.pixelformat);
 		return -1;
 	}
 	if ((fmt.fmt.pix.width != width) || (fmt.fmt.pix.height != height))
 	{
-		LOG(WARN) << "Cannot set size to:" << width << "x" << height << " size is:"  << fmt.fmt.pix.width << "x" << fmt.fmt.pix.height;
+		LOG(WARN) << m_params.m_devName << ": Cannot set size to:" << width << "x" << height << " size is:"  << fmt.fmt.pix.width << "x" << fmt.fmt.pix.height;
 	}
 	
 	m_format     = fmt.fmt.pix.pixelformat;
