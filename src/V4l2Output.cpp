@@ -24,12 +24,12 @@
 // -----------------------------------------
 //    create video output interface
 // -----------------------------------------
-V4l2Output* V4l2Output::create(const V4L2DeviceParameters & param, IoType iotype)
+V4l2Output* V4l2Output::create(const V4L2DeviceParameters & param)
 {
 	V4l2Output* videoOutput = NULL;
 	V4l2Device* videoDevice = NULL; 
 	int caps = V4L2_CAP_VIDEO_OUTPUT;
-	switch (iotype)
+	switch (param.m_iotype)
 	{
 		case IOTYPE_MMAP: 
 			videoDevice = new V4l2MmapDevice(param, V4L2_BUF_TYPE_VIDEO_OUTPUT); 

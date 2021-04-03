@@ -17,13 +17,7 @@
 
 class V4l2Access
 {
-	public:
-		enum IoType
-		{
-			IOTYPE_READWRITE,
-			IOTYPE_MMAP
-		};
-		
+	public:		
 		V4l2Access(V4l2Device* device);
 		virtual ~V4l2Access();
 		

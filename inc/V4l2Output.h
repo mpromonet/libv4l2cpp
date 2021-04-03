@@ -24,7 +24,7 @@ class V4l2Output : public V4l2Access
 		V4l2Output(V4l2Device* device);
 
 	public:
-		static V4l2Output* create(const V4L2DeviceParameters & param, IoType iotype = V4l2Access::IOTYPE_MMAP);
+		static V4l2Output* create(const V4L2DeviceParameters & param);
 		virtual ~V4l2Output();
 	
 		size_t write(char* buffer, size_t bufferSize);
