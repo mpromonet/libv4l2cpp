@@ -54,9 +54,9 @@ struct V4L2DeviceParameters
 	unsigned int m_width;
 	unsigned int m_height;
 	int m_fps;			
+	V4l2IoType m_iotype;
 	int m_verbose;
 	int m_openFlags;
-	V4l2IoType m_iotype;
 };
 
 // ---------------------------------
