@@ -75,9 +75,9 @@ void V4l2Device::queryFormat()
 // intialize the V4L2 connection
 bool V4l2Device::init(unsigned int mandatoryCapabilities)
 {
-        struct stat sb;
-        if ( (stat(m_params.m_devName.c_str(), &sb)==0) && ((sb.st_mode & S_IFMT) == S_IFCHR) )
-        {
+	struct stat sb;
+	if ( (stat(m_params.m_devName.c_str(), &sb)==0) && ((sb.st_mode & S_IFMT) == S_IFCHR) )
+	{
 		if (initdevice(m_params.m_devName.c_str(), mandatoryCapabilities) == -1)
 		{
 			LOG(ERROR) << "Cannot init device:" << m_params.m_devName;
@@ -85,8 +85,8 @@ bool V4l2Device::init(unsigned int mandatoryCapabilities)
 	}
 	else
 	{
-                // open a normal file
-                m_fd = open(m_params.m_devName.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+		// open a normal file
+		m_fd = open(m_params.m_devName.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
 	}
 	return (m_fd!=-1);
 }
@@ -187,8 +187,8 @@ int V4l2Device::configureFormat(int fd, unsigned int format, unsigned int width,
 	struct v4l2_format   fmt;			
 	memset(&(fmt), 0, sizeof(fmt));
 	fmt.type                = m_deviceType;
-        if (ioctl(m_fd,VIDIOC_G_FMT,&fmt) == -1)
-        {
+	if (ioctl(m_fd,VIDIOC_G_FMT,&fmt) == -1)
+	{
 		LOG(ERROR) << m_params.m_devName << ": Cannot get format " << strerror(errno);
 		return -1;
 	}

@@ -76,12 +76,12 @@ class V4l2Device
 		int configureFormat(int fd, unsigned int format, unsigned int width, unsigned int height);
 		int configureParam(int fd, int fps);
 
-		virtual bool init(unsigned int mandatoryCapabilities);		
-		virtual size_t writeInternal(char*, size_t) { return -1; }
-		virtual bool startPartialWrite(void)        { return false; }
-		virtual size_t writePartialInternal(char*, size_t) { return -1; }
-		virtual bool endPartialWrite(void)          { return false; }
-		virtual size_t readInternal(char*, size_t)  { return -1; }
+		virtual bool   init(unsigned int mandatoryCapabilities);		
+		virtual size_t writeInternal(char*, size_t)        { return -1;    }
+		virtual bool   startPartialWrite()                 { return false; }
+		virtual size_t writePartialInternal(char*, size_t) { return -1;    }
+		virtual bool   endPartialWrite()                   { return false; }
+		virtual size_t readInternal(char*, size_t)         { return -1;    }
 	
 	public:
 		V4l2Device(const V4L2DeviceParameters&  params, v4l2_buf_type deviceType);		
@@ -95,8 +95,9 @@ class V4l2Device
 		unsigned int getFormat()     { return m_format;     }
 		unsigned int getWidth()      { return m_width;      }
 		unsigned int getHeight()     { return m_height;     }
-		int getFd()         { return m_fd;         }
-		void queryFormat();	
+		int          getFd()         { return m_fd;         }
+		void         queryFormat();
+			
 		int setFormat(unsigned int format, unsigned int width, unsigned int height) {
 			return this->configureFormat(m_fd, format, width, height);
 		}

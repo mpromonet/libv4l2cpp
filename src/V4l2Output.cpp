@@ -89,7 +89,7 @@ size_t V4l2Output::write(char* buffer, size_t bufferSize)
 }
 
 
-bool V4l2Output::startPartialWrite(void)
+bool V4l2Output::startPartialWrite()
 {
 	return m_device->startPartialWrite();
 }
@@ -99,7 +99,7 @@ size_t V4l2Output::writePartial(char* buffer, size_t bufferSize)
 	return m_device->writePartialInternal(buffer, bufferSize);
 }
 
-bool V4l2Output::endPartialWrite(void)
+bool V4l2Output::endPartialWrite()
 {
 	return m_device->endPartialWrite();
 }
