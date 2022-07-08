@@ -18,6 +18,8 @@
 class V4l2Access
 {
 	public:		
+		enum Mode { READ = 1, WRITE = 2, ERROR = 4 };
+
 		V4l2Access(V4l2Device* device);
 		virtual ~V4l2Access();
 		
@@ -35,6 +37,8 @@ class V4l2Access
 		int isReady()       { return m_device->isReady();       }
 		int start()         { return m_device->start();         }
 		int stop()          { return m_device->stop();          }
+
+		bool poll(timeval* timeout, V4l2Access::Mode mode);
 
 	private:
 		V4l2Access(const V4l2Access&);

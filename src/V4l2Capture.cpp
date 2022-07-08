@@ -70,13 +70,9 @@ V4l2Capture::~V4l2Capture()
 // -----------------------------------------
 //    check readability
 // -----------------------------------------
-int V4l2Capture::isReadable(timeval* tv)
+bool V4l2Capture::isReadable(timeval* tv)
 {
-	int fd = m_device->getFd();
-	fd_set fdset;
-	FD_ZERO(&fdset);	
-	FD_SET(fd, &fdset);
-	return select(fd+1, &fdset, NULL, NULL, tv);
+	return poll(tv, V4l2Access::READ);
 }
 
 // -----------------------------------------

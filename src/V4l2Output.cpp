@@ -71,13 +71,9 @@ V4l2Output::~V4l2Output()
 // -----------------------------------------
 //    check writability
 // -----------------------------------------
-int V4l2Output::isWritable(timeval* tv)
+bool V4l2Output::isWritable(timeval* tv)
 {
-	int fd = m_device->getFd();
-	fd_set fdset;
-	FD_ZERO(&fdset);	
-	FD_SET(fd, &fdset);
-	return select(fd+1, NULL, &fdset, NULL, tv);
+	return poll(tv, V4l2Access::WRITE);
 }
 
 // -----------------------------------------
