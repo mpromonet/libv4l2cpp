@@ -18,7 +18,7 @@ V4L2 Capture
  - data are available :
 
          timeval timeout; 
-         bool isReadable = (videoCapture->isReadable(&timeout) == 1);
+         bool isReadable = videoCapture->isReadable(&timeout);
 
  - read data :
 
@@ -36,7 +36,7 @@ V4L2 Output
  - data could be written :
 
          timeval timeout; 
-         bool isWritable = (videoOutput->isWritable(&timeout) == 1);
+         bool isWritable = videoOutput->isWritable(&timeout);
 
  - write data :
 

@@ -28,7 +28,7 @@ class V4l2Output : public V4l2Access
 		virtual ~V4l2Output();
 	
 		size_t write(char* buffer, size_t bufferSize);
-		int    isWritable(timeval* tv);
+		bool   isWritable(timeval* tv);
 		bool   startPartialWrite();
 		size_t writePartial(char* buffer, size_t bufferSize);
 		bool   endPartialWrite();
