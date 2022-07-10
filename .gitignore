@@ -3,3 +3,4 @@ src/*.o
 *.cmake
 CMakeCache.txt
 CMakeFiles/
+libv4l2cpptest
