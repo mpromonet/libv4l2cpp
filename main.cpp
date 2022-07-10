@@ -12,14 +12,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <stdlib.h>
 #include <signal.h>
 
 #include "logger.h"
-
-#include "V4l2Device.h"
 #include "V4l2Capture.h"
-#include "V4l2Output.h"
 
 int stop=0;
 
@@ -37,7 +33,7 @@ void sighandler(int)
 ** -------------------------------------------------------------------------*/
 int main(int argc, char* argv[]) 
 {	
-	int verbose=0;
+	int verbose = 0;
 	const char *in_devname = "/dev/video0";	
 	V4l2IoType ioTypeIn  = IOTYPE_MMAP;
 	int format = 0;
@@ -52,7 +48,7 @@ int main(int argc, char* argv[])
 		{
 			case 'v':	verbose   = 1; if (optarg && *optarg=='v') verbose++; break;
 			case 'r':	ioTypeIn  = IOTYPE_READWRITE                        ; break;			
-                        case 'G':       sscanf(optarg,"%dx%dx%d", &width, &height, &fps)    ; break;
+            case 'G':   sscanf(optarg,"%dx%dx%d", &width, &height, &fps)    ; break;
 			case 'f':	format    = V4l2Device::fourcc(optarg)              ; break;
 			case 'h':
 			{
