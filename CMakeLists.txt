@@ -13,3 +13,5 @@ include_directories("inc")
 aux_source_directory(src SRC_FILES)
 add_library(${PROJECT_NAME} ${SRC_FILES})
 
+add_executable (${PROJECT_NAME}test main.cpp)
+target_link_libraries (${PROJECT_NAME}test ${PROJECT_NAME}) 
