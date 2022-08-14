@@ -31,6 +31,9 @@ class V4l2Access
 		int setFormat(unsigned int format, unsigned int width, unsigned int height)  { 
 			return m_device->setFormat(format, width, height); 
 		}
+		int setFps(int fps) {
+			return m_device->setFps(fps);
+		}
 
 		int isReady()       { return m_device->isReady();       }
 		int start()         { return m_device->start();         }
