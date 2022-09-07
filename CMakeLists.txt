@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "-Wall")
 
 aux_source_directory(src SRC_FILES)
 add_library(${PROJECT_NAME} ${SRC_FILES})
-target_include_directories(${PROJECT_NAME} PUBLIC "inc")
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_LIST_DIR}/inc")
 
 add_executable (${PROJECT_NAME}test main.cpp)
 target_link_libraries (${PROJECT_NAME}test ${PROJECT_NAME}) 
