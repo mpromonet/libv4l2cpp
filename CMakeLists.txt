@@ -8,10 +8,9 @@ set (CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS "-Wall")
 
-# define executable to build
-include_directories("inc")
 aux_source_directory(src SRC_FILES)
 add_library(${PROJECT_NAME} ${SRC_FILES})
+target_include_directories(${PROJECT_NAME} PUBLIC "inc")
 
 add_executable (${PROJECT_NAME}test main.cpp)
 target_link_libraries (${PROJECT_NAME}test ${PROJECT_NAME}) 
