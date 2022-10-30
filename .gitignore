@@ -4,3 +4,4 @@ src/*.o
 CMakeCache.txt
 CMakeFiles/
 libv4l2cpptest
+Makefile
