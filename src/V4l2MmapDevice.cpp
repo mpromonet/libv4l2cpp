@@ -25,7 +25,6 @@
 
 V4l2MmapDevice::V4l2MmapDevice(const V4L2DeviceParameters & params, v4l2_buf_type deviceType) : V4l2Device(params, deviceType), n_buffers(0) 
 {
-	memset(&m_buffer, 0, sizeof(m_buffer));
 }
 
 bool V4l2MmapDevice::init(unsigned int mandatoryCapabilities)

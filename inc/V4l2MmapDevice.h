@@ -43,7 +43,7 @@ class V4l2MmapDevice : public V4l2Device
 			void *                  start;
 			size_t                  length;
 		};
-		buffer m_buffer[V4L2MMAP_NBBUFFER];
+		buffer m_buffer[V4L2MMAP_NBBUFFER]= {};
 };
 
 #endif
