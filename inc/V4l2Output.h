@@ -10,8 +10,7 @@
 ** -------------------------------------------------------------------------*/
 
 
-#ifndef V4L2_OUTPUT
-#define V4L2_OUTPUT
+#pragma once
 
 #include "V4l2Access.h"
 
@@ -21,7 +20,7 @@
 class V4l2Output : public V4l2Access
 {		
 	protected:
-		V4l2Output(V4l2Device* device);
+		explicit V4l2Output(V4l2Device* device);
 
 	public:
 		static V4l2Output* create(const V4L2DeviceParameters & param);
@@ -34,4 +33,3 @@ class V4l2Output : public V4l2Access
 		bool   endPartialWrite();
 };
 
-#endif

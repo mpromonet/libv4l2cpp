@@ -10,8 +10,7 @@
 ** -------------------------------------------------------------------------*/
 
 
-#ifndef V4L2_RW_DEVICE
-#define V4L2_RW_DEVICE
+#pragma once
  
 #include "V4l2Device.h"
 
@@ -27,5 +26,4 @@ class V4l2ReadWriteDevice : public V4l2Device
 };
 
 
-#endif
 

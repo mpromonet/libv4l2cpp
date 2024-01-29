@@ -10,15 +10,14 @@
 ** -------------------------------------------------------------------------*/
 
 
-#ifndef V4L2_ACCESS
-#define V4L2_ACCESS
+#pragma once
 
 #include "V4l2Device.h"
 
 class V4l2Access
 {
 	public:		
-		V4l2Access(V4l2Device* device);
+		explicit V4l2Access(V4l2Device* device);
 		virtual ~V4l2Access();
 		
 		int getFd()                  { return m_device->getFd();         }
@@ -47,5 +46,3 @@ class V4l2Access
 		V4l2Device* m_device;		
 };
 
-
-#endif

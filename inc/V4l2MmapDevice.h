@@ -10,8 +10,7 @@
 ** -------------------------------------------------------------------------*/
 
 
-#ifndef V4L2_MMAP_DEVICE
-#define V4L2_MMAP_DEVICE
+#pragma once
  
 #include "V4l2Device.h"
 
@@ -46,5 +45,4 @@ class V4l2MmapDevice : public V4l2Device
 		buffer m_buffer[V4L2MMAP_NBBUFFER];
 };
 
-#endif
 

@@ -10,8 +10,7 @@
 ** -------------------------------------------------------------------------*/
 
 
-#ifndef V4L2_CAPTURE
-#define V4L2_CAPTURE
+#pragma once 
 
 #include "V4l2Access.h"
 
@@ -21,7 +20,7 @@
 class V4l2Capture : public V4l2Access
 {		
 	protected:	
-		V4l2Capture(V4l2Device* device);
+		explicit V4l2Capture(V4l2Device* device);
 	
 	public:
 		static V4l2Capture* create(const V4L2DeviceParameters & param);
@@ -32,4 +31,3 @@ class V4l2Capture : public V4l2Access
 };
 
 
-#endif

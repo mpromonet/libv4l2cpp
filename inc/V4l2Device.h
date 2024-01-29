@@ -10,8 +10,7 @@
 ** -------------------------------------------------------------------------*/
 
 
-#ifndef V4L2_DEVICE
-#define V4L2_DEVICE
+#pragma once
 
 #include <string>
 #include <list>
@@ -123,4 +122,3 @@ class V4l2Device
 };
 
 
-#endif

@@ -7,8 +7,7 @@
 ** 
 ** -------------------------------------------------------------------------*/
 
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
 
 #include <unistd.h>
 
@@ -75,5 +74,4 @@ inline void initLogger(int verbose)
 
 #endif
 	
-#endif
 
