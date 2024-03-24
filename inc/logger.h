@@ -10,13 +10,16 @@
 #pragma once
 
 #include <unistd.h>
+#include <cstring>
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #ifdef HAVE_LOG4CPP
 #include "log4cpp/Category.hh"
 #include "log4cpp/FileAppender.hh"
 #include "log4cpp/PatternLayout.hh"
 
-#define LOG(__level)  log4cpp::Category::getRoot() << log4cpp::Priority::__level << __FILE__ << ":" << __LINE__ << "\n\t" 
+#define LOG(__level)  log4cpp::Category::getRoot() << log4cpp::Priority::__level << __FILENAME__ << ":" << __LINE__ << "\n\t" 
 
 inline void initLogger(int verbose)
 {
@@ -57,8 +60,20 @@ typedef enum {EMERG  = 0,
 } PriorityLevel;
 
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 extern int LogLevel;
-#define LOG(__level) if (__level<=LogLevel) std::cout << "\n[" << #__level << "] " << __FILE__ << ":" << __LINE__ << "\n\t" 
+inline std::string getLevel(const char* level) {
+	std::stringstream ss;
+	ss << "[" << level << "]";
+	return ss.str();
+}
+inline std::string getFilename(const char* filename, int line) {
+	std::stringstream ss;
+	ss << "(" << filename << ":" << line << ")";
+	return ss.str();
+}
+#define LOG(__level) if (__level<=LogLevel) std::cout << "\n" <<  std::setw(8) << std::left << getLevel(#__level) << " " << std::setw(30) << std::left << getFilename(__FILENAME__, __LINE__) << "\t" 
 
 inline void initLogger(int verbose)
 {

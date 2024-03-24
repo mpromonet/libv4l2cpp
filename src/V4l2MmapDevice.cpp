@@ -46,7 +46,7 @@ V4l2MmapDevice::~V4l2MmapDevice()
 
 bool V4l2MmapDevice::start() 
 {
-	LOG(NOTICE) << "Device " << m_params.m_devName;
+	LOG(INFO) << "Device " << m_params.m_devName;
 
 	bool success = true;
 	struct v4l2_requestbuffers req;
@@ -70,7 +70,7 @@ bool V4l2MmapDevice::start()
 	}
 	else
 	{
-		LOG(NOTICE) << "Device " << m_params.m_devName << " nb buffer:" << req.count;
+		LOG(INFO) << "Device " << m_params.m_devName << " nb buffer:" << req.count;
 		
 		// allocate buffers
 		memset(&m_buffer,0, sizeof(m_buffer));
@@ -138,7 +138,7 @@ bool V4l2MmapDevice::start()
 
 bool V4l2MmapDevice::stop() 
 {
-	LOG(NOTICE) << "Device " << m_params.m_devName;
+	LOG(INFO) << "Device " << m_params.m_devName;
 
 	bool success = true;
 	
