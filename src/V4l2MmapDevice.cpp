@@ -186,8 +186,12 @@ size_t V4l2MmapDevice::readInternal(char* buffer, size_t bufferSize)
 
 		if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &buf)) 
 		{
-			perror("VIDIOC_DQBUF");
-			size = -1;
+			if (errno == EAGAIN) {
+				size = 0;
+			} else {
+				perror("VIDIOC_DQBUF");
+				size = -1;
+			}
 		}
 		else if (buf.index < n_buffers)
 		{
