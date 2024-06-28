@@ -40,9 +40,9 @@ int main(int argc, char* argv[])
 	int width = 0;
 	int height = 0;
 	int fps = 0;
-	
+	int framecount = 0;
 	int c = 0;
-	while ((c = getopt (argc, argv, "hv:" "G:f:r")) != -1)
+	while ((c = getopt (argc, argv, "x:hv:" "G:f:r")) != -1)
 	{
 		switch (c)
 		{
@@ -50,12 +50,15 @@ int main(int argc, char* argv[])
 			case 'r':	ioTypeIn  = IOTYPE_READWRITE                        ; break;			
             case 'G':   sscanf(optarg,"%dx%dx%d", &width, &height, &fps)    ; break;
 			case 'f':	format    = V4l2Device::fourcc(optarg)              ; break;
+			case 'x':   sscanf(optarg,"%d", &framecount) 					; break;
 			case 'h':
 			{
 				std::cout << argv[0] << " [-v[v]] [-G <width>x<height>x<fps>] [-f format] [device] [-r]" << std::endl;
+				std::cout << "\t -G <width>x<height>x<fps> : set capture resolution" << std::endl;
 				std::cout << "\t -v            : verbose " << std::endl;
 				std::cout << "\t -vv           : very verbose " << std::endl;
 				std::cout << "\t -r            : V4L2 capture using read interface (default use memory mapped buffers)" << std::endl;
+				std::cout << "\t -x <count>    : read <count> frames and save them in current dir." << std::endl;
 				std::cout << "\t device        : V4L2 capture device (default "<< in_devname << ")" << std::endl;
 				exit(0);
 			}
@@ -81,7 +84,7 @@ int main(int argc, char* argv[])
 	else
 	{
 		timeval tv;
-		
+
 		LOG(NOTICE) << "Start reading from " << in_devname;
 		signal(SIGINT,sighandler);				
 		while (!stop) 
@@ -101,6 +104,15 @@ int main(int argc, char* argv[])
 				else
 				{
 					LOG(NOTICE) << "size:" << rsize;
+					static int stop_count = 0;
+					if(framecount and stop_count < framecount){
+						std::string filename = "Frame" + std::to_string(stop_count) + '.' + V4l2Device::fourcc(videoCapture->getFormat());
+						stop_count++;
+						FILE *fp = fopen(filename.c_str(), "wb");
+						fwrite(buffer, 1, rsize, fp);
+						fclose(fp);
+						LOG(NOTICE) << "saved:\t" << filename;
+					}
 				}
 			}
 			else if (ret == -1)
