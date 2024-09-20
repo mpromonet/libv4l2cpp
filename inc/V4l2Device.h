@@ -38,11 +38,11 @@ enum V4l2IoType
 // ---------------------------------
 struct V4L2DeviceParameters 
 {
-	V4L2DeviceParameters(const char* devname, const std::list<unsigned int> & formatList, unsigned int width, unsigned int height, int fps, V4l2IoType ioType = IOTYPE_MMAP, int verbose = 0, int openFlags = O_RDWR | O_NONBLOCK) : 
-		m_devName(devname), m_formatList(formatList), m_width(width), m_height(height), m_fps(fps), m_iotype(ioType), m_verbose(verbose), m_openFlags(openFlags) {}
+	V4L2DeviceParameters(const char* devname, const std::list<unsigned int> & formatList, unsigned int width, unsigned int height, int fps, V4l2IoType ioType = IOTYPE_MMAP, int openFlags = O_RDWR | O_NONBLOCK) : 
+		m_devName(devname), m_formatList(formatList), m_width(width), m_height(height), m_fps(fps), m_iotype(ioType), m_openFlags(openFlags) {}
 
-	V4L2DeviceParameters(const char* devname, unsigned int format, unsigned int width, unsigned int height, int fps, V4l2IoType ioType = IOTYPE_MMAP, int verbose = 0, int openFlags = O_RDWR | O_NONBLOCK) : 
-		m_devName(devname), m_width(width), m_height(height), m_fps(fps), m_iotype(ioType), m_verbose(verbose), m_openFlags(openFlags) {
+	V4L2DeviceParameters(const char* devname, unsigned int format, unsigned int width, unsigned int height, int fps, V4l2IoType ioType = IOTYPE_MMAP, int openFlags = O_RDWR | O_NONBLOCK) : 
+		m_devName(devname), m_width(width), m_height(height), m_fps(fps), m_iotype(ioType), m_openFlags(openFlags) {
 			if (format) {
 				m_formatList.push_back(format);
 			}
