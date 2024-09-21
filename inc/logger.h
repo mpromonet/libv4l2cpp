@@ -21,6 +21,22 @@
 
 #define LOG(__level)  log4cpp::Category::getRoot() << log4cpp::Priority::__level << __FILENAME__ << ":" << __LINE__ << "\n\t" 
 
+
+inline int getLogLevel() {
+	log4cpp::Category &log = log4cpp::Category::getRoot();
+	return log.getPriority();
+}
+
+inline void setLogLevel(int verbose) {
+	log4cpp::Category &log = log4cpp::Category::getRoot();
+	switch (verbose)
+	{
+		case 2: log.setPriority(log4cpp::Priority::DEBUG); break;
+		case 1: log.setPriority(log4cpp::Priority::INFO); break;
+		default: log.setPriority(log4cpp::Priority::NOTICE); break;
+	}
+}
+
 inline void initLogger(int verbose)
 {
 	// initialize log4cpp
@@ -36,13 +52,9 @@ inline void initLogger(int verbose)
 		}
 		log.addAppender(app);
 	}
-	switch (verbose)
-	{
-		case 2: log.setPriority(log4cpp::Priority::DEBUG); break;
-		case 1: log.setPriority(log4cpp::Priority::INFO); break;
-		default: log.setPriority(log4cpp::Priority::NOTICE); break;
-		
-	}
+
+	setLogLevel(verbose);
+
 	LOG(INFO) << "level:" << log4cpp::Priority::getPriorityName(log.getPriority()); 
 }
 #else
@@ -75,15 +87,23 @@ inline std::string getFilename(const char* filename, int line) {
 }
 #define LOG(__level) if (__level<=LogLevel) std::cout << "\n" <<  std::setw(8) << std::left << getLevel(#__level) << " " << std::setw(30) << std::left << getFilename(__FILENAME__, __LINE__) << "\t" 
 
+
+inline int getLogLevel() {
+	return LogLevel;
+}
+
+inline void setLogLevel(int verbose) {
+	switch (verbose)
+	{
+			case 2: LogLevel=DEBUG; break;
+			case 1: LogLevel=INFO; break;
+			default: LogLevel=NOTICE; break;
+	}
+}
+
 inline void initLogger(int verbose)
 {
-        switch (verbose)
-        {
-                case 2: LogLevel=DEBUG; break;
-                case 1: LogLevel=INFO; break;
-                default: LogLevel=NOTICE; break;
-
-        }
+	setLogLevel(verbose);
 	std::cout << "log level:" << LogLevel << std::endl;
 }
 
