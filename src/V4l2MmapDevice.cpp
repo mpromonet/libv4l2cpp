@@ -195,7 +195,10 @@ size_t V4l2MmapDevice::readInternal(char* buffer, size_t bufferSize)
 		}
 		else if (buf.index < n_buffers)
 		{
-			size = buf.bytesused;
+			size = buf.length;
+			if (!size) {
+				size = buf.bytesused;
+			}
 			if (size > bufferSize)
 			{
 				size = bufferSize;
