@@ -195,10 +195,8 @@ size_t V4l2MmapDevice::readInternal(char* buffer, size_t bufferSize)
 		}
 		else if (buf.index < n_buffers)
 		{
-			size = buf.length;
-			if (!size) {
-				size = buf.bytesused;
-			}
+			LOG(DEBUG) << "Device " << m_params.m_devName << " buffer flags:0x" << std::hex << buf.flags << std::dec;
+			size = buf.bytesused;
 			if (size > bufferSize)
 			{
 				size = bufferSize;
