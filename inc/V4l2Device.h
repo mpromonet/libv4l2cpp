@@ -56,6 +56,7 @@ struct V4L2DeviceParameters
 	V4l2IoType m_iotype;
 	int m_verbose;
 	int m_openFlags;
+	bool m_timestampOverlay = false;
 };
 
 // ---------------------------------

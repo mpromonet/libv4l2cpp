@@ -12,9 +12,11 @@
 
 // libv4l2
 #include <linux/videodev2.h>
+#include <sys/time.h>
 
 // project
 #include "logger.h"
+#include "TimestampOverlay.h"
 #include "V4l2Capture.h"
 #include "V4l2MmapDevice.h"
 #include "V4l2ReadWriteDevice.h"
@@ -84,7 +86,17 @@ bool V4l2Capture::isReadable(timeval* tv)
 // -----------------------------------------
 size_t V4l2Capture::read(char* buffer, size_t bufferSize)
 {
-	return m_device->readInternal(buffer, bufferSize);
+	size_t size = m_device->readInternal(buffer, bufferSize);
+	if (size > 0 && m_device->m_params.m_timestampOverlay)
+	{
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		TimestampOverlay::apply(buffer, static_cast<int>(size),
+			static_cast<int>(m_device->m_width),
+			static_cast<int>(m_device->m_height),
+			static_cast<int>(m_device->m_format), tv);
+	}
+	return size;
 }
 
 				
