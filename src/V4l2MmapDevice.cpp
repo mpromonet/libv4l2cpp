@@ -197,7 +197,18 @@ size_t V4l2MmapDevice::readInternal(char* buffer, size_t bufferSize)
 		{
 			LOG(DEBUG) << "Device " << m_params.m_devName << " buffer flags:0x" << std::hex << buf.flags << std::dec;
 			size = buf.bytesused;
-			if (size > bufferSize)
+			if (buf.flags & V4L2_BUF_FLAG_ERROR)
+			{
+				LOG(WARN) << "Device " << m_params.m_devName << " dropping frame, buffer flagged as error"
+					<< " (bytesused:" << buf.bytesused
+					<< " index:" << buf.index
+					<< " sequence:" << buf.sequence
+					<< " field:" << buf.field
+					<< " flags:0x" << std::hex << buf.flags << std::dec
+					<< " timestamp:" << buf.timestamp.tv_sec << "." << buf.timestamp.tv_usec << ")";
+				size = 0;
+			}
+			else if (size > bufferSize)
 			{
 				size = bufferSize;
 				LOG(WARN) << "Device " << m_params.m_devName << " buffer truncated available:" << bufferSize << " needed:" << buf.bytesused;

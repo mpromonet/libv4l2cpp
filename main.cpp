@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					LOG(NOTICE) << "size:" << rsize;
+					LOG(NOTICE) << "size:" << rsize << " buffersize:" << videoCapture->getBufferSize();
 					static int stop_count = 0;
 					if(framecount and stop_count < framecount){
 						std::string filename = "Frame" + std::to_string(stop_count) + '.' + V4l2Device::fourcc(videoCapture->getFormat());
