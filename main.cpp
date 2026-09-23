@@ -42,7 +42,8 @@ int main(int argc, char* argv[])
 	int fps = 0;
 	int framecount = 0;
 	int c = 0;
-	while ((c = getopt (argc, argv, "x:hv:" "G:f:r")) != -1)
+	int timestampOverlay = 0;
+	while ((c = getopt (argc, argv, "x:hv:" "G:f:rt")) != -1)
 	{
 		switch (c)
 		{
@@ -51,6 +52,7 @@ int main(int argc, char* argv[])
             case 'G':   sscanf(optarg,"%dx%dx%d", &width, &height, &fps)    ; break;
 			case 'f':	format    = V4l2Device::fourcc(optarg)              ; break;
 			case 'x':   sscanf(optarg,"%d", &framecount) 					; break;
+			case 't':   timestampOverlay = 1                                ; break;
 			case 'h':
 			{
 				std::cout << argv[0] << " [-v[v]] [-G <width>x<height>x<fps>] [-f format] [device] [-r]" << std::endl;
@@ -59,6 +61,7 @@ int main(int argc, char* argv[])
 				std::cout << "\t -vv           : very verbose " << std::endl;
 				std::cout << "\t -r            : V4L2 capture using read interface (default use memory mapped buffers)" << std::endl;
 				std::cout << "\t -x <count>    : read <count> frames and save them in current dir." << std::endl;
+				std::cout << "\t -t            : enable timestamp overlay" << std::endl;
 				std::cout << "\t device        : V4L2 capture device (default "<< in_devname << ")" << std::endl;
 				exit(0);
 			}
@@ -74,7 +77,7 @@ int main(int argc, char* argv[])
 	initLogger(verbose);
 
 	// init V4L2 capture interface
-	V4L2DeviceParameters param(in_devname, format, width, height, fps, ioTypeIn);
+	V4L2DeviceParameters param(in_devname, format, width, height, fps, ioTypeIn, O_RDWR | O_NONBLOCK, timestampOverlay);
 	V4l2Capture* videoCapture = V4l2Capture::create(param);
 	
 	if (videoCapture == NULL)
